@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  /* Define your brand colors for Tailwind */
+  --color-rubrik-red: #b91c1c;
+  --color-rubrik-navy: #292075;
+}
+
+/* --- YOUR PRESERVED VISUAL SETTINGS --- */
+:root {
+  /* Keeping your font stack */
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  /* Keeping your text rendering optimizations for crisp text */
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- CRITICAL LAYOUT & BRAND FIXES --- */
+body {
+  margin: 0;
+  min-height: 100vh;
+  
+  /* FIX 1: Removed 'display: flex' & 'place-items: center' 
+     This ensures the site flows from top-to-bottom instead of being stuck in the middle. */
+     
+  /* FIX 2: Applied your Brand Colors instead of the default dark gray (#242424) */
+  background-color: white;
+  color: var(--color-rubrik-navy);
+}
+
+/* --- OPTIONAL: LINK STYLES --- */
+a {
+  font-weight: 500;
+  text-decoration: inherit;
+  transition: color 0.25s;
+}
+
+/* NOTE: I removed the 'button' styles because our React code handles 
+   button styling (red background, white text) automatically. 
+   Keeping global button styles here would break the specific designs. */
