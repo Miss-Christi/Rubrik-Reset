@@ -81,7 +81,7 @@ export default function App() {
                alt="Community Background" 
                className="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-[20s]"
              />
-             <div className="absolute inset-0 bg-gradient-to-b from-rubrik-navy/80 via-rubrik-navy/60 to-stone-50"></div>
+             <div className="absolute inset-0 bg-rubrik-navy/60 to rubrik-navy/40"></div>
           </div>
           
           <div className="relative z-10 max-w-5xl mx-auto flex flex-col items-center">
