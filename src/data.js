@@ -5,8 +5,9 @@ export const NEW_ARRIVALS = [
     title: "The Art of Letting Go", 
     price: "399", 
     rating: 5, 
-    category: "Journal",
-    image: "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=800&auto=format&fit=crop"
+    category: "Lenten Journal",
+    // Image: Crown of thorns / Purple fabric
+    image: "https://images.unsplash.com/photo-1583383133387-075ed7150011?q=80&w=800&auto=format&fit=crop"
   },
   { 
     id: 2, 
@@ -14,43 +15,48 @@ export const NEW_ARRIVALS = [
     price: "499", 
     rating: 5, 
     category: "Book",
-    image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=800&auto=format&fit=crop"
+    // Image: Statue of Mary / Blue Aesthetic
+    image: "https://images.unsplash.com/photo-1605353132645-0d33e69eb858?q=80&w=800&auto=format&fit=crop"
   },
   { 
     id: 3, 
     title: "Adore Te Devote", 
     price: "450", 
     rating: 5, 
-    category: "Journal",
-    image: "https://images.unsplash.com/photo-1601132359864-c974e7989094?q=80&w=800&auto=format&fit=crop"
+    category: "Adoration Journal",
+    // Image: Monstrance / Candlelight
+    image: "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=800&auto=format&fit=crop"
   },
   { 
     id: 4, 
-    title: "Daily Examen Planner", 
-    price: "250", 
+    title: "Rubrik Postcard Set", 
+    price: "249", 
     rating: 4, 
     category: "Stationery",
-    image: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=800&auto=format&fit=crop"
+    // Image: Aesthetic handwritten letters
+    image: "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?q=80&w=800&auto=format&fit=crop"
   },
   { 
     id: 5, 
     title: "Stewardship Kit", 
     price: "1200", 
-    rating: 4, 
-    category: "Kit",
-    image: "https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=800&auto=format&fit=crop"
+    rating: 5, 
+    category: "Gift Kit",
+    // Image: Rustic table with bible and coffee
+    image: "https://images.unsplash.com/photo-1496483526623-c048295f832e?q=80&w=800&auto=format&fit=crop"
   },
   { 
     id: 6, 
-    title: "Community Tee - Navy", 
+    title: "Community Tee", 
     price: "600", 
     rating: 5, 
     category: "Apparel",
+    // Image: Navy blue texture
     image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=800&auto=format&fit=crop"
-  },
+  }
 ];
 
-// --- FORMATION CHALLENGES (Digital/Courses) ---
+// --- FORMATION CHALLENGES (Digital) ---
 export const FORMATION_CHALLENGES = [
   { 
     id: 101, 
@@ -58,6 +64,7 @@ export const FORMATION_CHALLENGES = [
     rating: 5, 
     category: "Membership", 
     duration: "Ongoing",
+    // Image: Diverse group of young people
     image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop"
   },
   { 
@@ -66,7 +73,8 @@ export const FORMATION_CHALLENGES = [
     rating: 5, 
     category: "Challenge", 
     duration: "30 Days",
-    image: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=800&auto=format&fit=crop"
+    // Image: Reading a book intently
+    image: "https://images.unsplash.com/photo-1473186505569-9c61870c11f9?q=80&w=800&auto=format&fit=crop"
   },
   { 
     id: 103, 
@@ -74,7 +82,8 @@ export const FORMATION_CHALLENGES = [
     rating: 5, 
     category: "Novena", 
     duration: "40 Days",
-    image: "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=800&auto=format&fit=crop"
+    // Image: Rosary beads
+    image: "https://images.unsplash.com/photo-1505506927361-b84175396652?q=80&w=800&auto=format&fit=crop"
   },
   { 
     id: 104, 
@@ -82,6 +91,7 @@ export const FORMATION_CHALLENGES = [
     rating: 4, 
     category: "Course", 
     duration: "7 Days",
+    // Image: Plant/Nature
     image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop"
   },
 ];
@@ -91,15 +101,15 @@ export const BLOG_POSTS = [
   { 
     id: 1, 
     title: "Revisiting the Basics", 
-    excerpt: "Going back to core values is not regression, it's a reset.", 
+    excerpt: "In a fast-paced world, going back to the core values of our faith is not regression, it's a reset.", 
     date: "Jan 10, 2026", 
     category: "Reflection",
     image: "https://images.unsplash.com/photo-1499750310159-5b5f0969206e?q=80&w=800&auto=format&fit=crop"
   },
   { 
     id: 2, 
-    title: "Digital Stewardship", 
-    excerpt: "Managing our digital presence with care and intent.", 
+    title: "Stewardship in the Digital Age", 
+    excerpt: "How do we manage our digital presence with the same care we give our physical communities?", 
     date: "Jan 05, 2026", 
     category: "Digital",
     image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop"
@@ -107,25 +117,9 @@ export const BLOG_POSTS = [
   { 
     id: 3, 
     title: "True Community", 
-    excerpt: "More than a group chat: vulnerability and presence.", 
+    excerpt: "More than a group chat: True community requires vulnerability, presence, and a willingness to walk together.", 
     date: "Dec 28, 2025", 
     category: "Community",
-    image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop"
-  },
-  { 
-    id: 4, 
-    title: "The Art of Silence", 
-    excerpt: "Finding God in the quiet moments of a busy life.", 
-    date: "Dec 20, 2025", 
-    category: "Prayer",
-    image: "https://images.unsplash.com/photo-1510936111840-65e151ad71bb?q=80&w=800&auto=format&fit=crop"
-  },
-  { 
-    id: 5, 
-    title: "Youth & Tradition", 
-    excerpt: "Bridging the gap between modern life and ancient wisdom.", 
-    date: "Dec 15, 2025", 
-    category: "Formation",
-    image: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=800&auto=format&fit=crop"
+    image: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=800&auto=format&fit=crop"
   },
 ];
