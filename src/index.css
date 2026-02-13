@@ -4,6 +4,7 @@
   /* Define your brand colors for Tailwind */
   --color-rubrik-red: #b91c1c;
   --color-rubrik-navy: #292075;
+  --color-rubrik-blue: #009CDC;
 }
 
 /* --- YOUR PRESERVED VISUAL SETTINGS --- */
@@ -24,10 +25,10 @@
 body {
   margin: 0;
   min-height: 100vh;
-  
+
   /* FIX 1: Removed 'display: flex' & 'place-items: center' 
      This ensures the site flows from top-to-bottom instead of being stuck in the middle. */
-     
+
   /* FIX 2: Applied your Brand Colors instead of the default dark gray (#242424) */
   background-color: white;
   color: var(--color-rubrik-navy);
@@ -40,6 +41,18 @@ a {
   transition: color 0.25s;
 }
 
-/* NOTE: I removed the 'button' styles because our React code handles 
-   button styling (red background, white text) automatically. 
-   Keeping global button styles here would break the specific designs. */
+
+@layer utilities {
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
