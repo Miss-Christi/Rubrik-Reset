@@ -13,33 +13,37 @@ import Home from "./pages/Home";
 // Components
 import ProtectedRoute from "./components/ProtectedRoute";
 
+import { CartProvider } from "./CartContext";
+
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="App">
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+      <CartProvider>
+        <Router>
+          <div className="App">
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
 
-            {/* Protected User Route */}
-            <Route element={<ProtectedRoute allowedRoles={['user', 'admin']} />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-            </Route>
+              {/* Protected User Route */}
+              <Route element={<ProtectedRoute allowedRoles={['user', 'admin']} />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+              </Route>
 
-            {/* Protected Admin Route */}
-            <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-              <Route path="/admin" element={<AdminDashboard />} />
-            </Route>
+              {/* Protected Admin Route */}
+              <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+                <Route path="/admin" element={<AdminDashboard />} />
+              </Route>
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-          <ToastContainer />
-        </div>
-      </Router>
+              {/* Fallback */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+            <ToastContainer />
+          </div>
+        </Router>
+      </CartProvider>
     </AuthProvider>
   );
 }
