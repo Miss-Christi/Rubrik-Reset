@@ -2,6 +2,7 @@ import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import AuthContext from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -17,16 +18,14 @@ const Login = () => {
         setIsLoading(true);
         try {
             const user = await login(email, password);
+            toast.success("Login successful!");
             // Simulate a small delay for better UX
             setTimeout(() => {
-                if (user.role === 'admin') {
-                    navigate("/admin");
-                } else {
-                    navigate("/dashboard");
-                }
+                navigate("/");
             }, 500);
         } catch (error) {
             console.error(error);
+            toast.error(error.response?.data?.message || error.message || "Login failed");
             setIsLoading(false);
         }
     };

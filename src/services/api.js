@@ -2,6 +2,7 @@ import axios from "axios";
 
 const API = axios.create({
     baseURL: "http://localhost:5000/api",
+    timeout: 10000, // 10 seconds timeout to prevent infinite hang
 });
 
 // Request interceptor: attach token

@@ -13,6 +13,7 @@ import {
     Circle,
 } from "lucide-react";
 import AuthContext from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -50,20 +51,24 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (formData.password !== formData.confirmPassword) {
-            alert("Passwords do not match!");
+            toast.error("Passwords do not match!");
             return;
         }
         if (!formData.agreeToTerms) {
-            alert("Please agree to the Terms of Service.");
+            toast.error("Please agree to the Terms of Service.");
             return;
         }
 
         setIsLoading(true);
         try {
-            await register(formData.name, formData.email, formData.password);
-            setTimeout(() => navigate("/dashboard"), 500);
+            const user = await register(formData.name, formData.email, formData.password);
+            toast.success("Sign up successful!");
+            setTimeout(() => {
+                navigate("/");
+            }, 500);
         } catch (error) {
             console.error(error);
+            toast.error(error.response?.data?.message || error.message || "Registration failed");
             setIsLoading(false);
         }
     };

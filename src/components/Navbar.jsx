@@ -29,12 +29,12 @@ const Navbar = ({ isMenuOpen, setIsMenuOpen, onOpenCart }) => {
                         <a
                             key={item}
                             href={`#${item.toLowerCase() === "store"
-                                    ? "explore"
-                                    : item.toLowerCase() === "reflections"
-                                        ? "blog"
-                                        : item.toLowerCase() === "formation"
-                                            ? "challenges"
-                                            : "about"
+                                ? "explore"
+                                : item.toLowerCase() === "reflections"
+                                    ? "blog"
+                                    : item.toLowerCase() === "formation"
+                                        ? "challenges"
+                                        : "about"
                                 }`}
                             className="hover:text-white/80 transition-colors"
                         >
@@ -45,19 +45,13 @@ const Navbar = ({ isMenuOpen, setIsMenuOpen, onOpenCart }) => {
 
                 <div className="flex items-center gap-5">
                     {user ? (
-                        <div className="flex items-center gap-4">
-                            <Link to="/dashboard" className="text-white hover:text-white/80">
-                                Dashboard
-                            </Link>
-                            {user.role === "admin" && (
-                                <Link
-                                    to="/admin"
-                                    className="text-white hover:text-white/80 font-bold"
-                                >
-                                    Admin
-                                </Link>
-                            )}
-                        </div>
+                        <Link
+                            to={user.role === "admin" ? "/admin" : "/dashboard"}
+                            className="flex items-center justify-center w-9 h-9 rounded-full bg-white text-rubrik-red font-bold text-sm shadow-sm hover:scale-110 transition-transform uppercase"
+                            title="Go to Dashboard"
+                        >
+                            {user.name ? user.name.charAt(0) : <User className="w-5 h-5" />}
+                        </Link>
                     ) : (
                         <Link to="/login" className="flex items-center gap-1 text-white">
                             <User className="w-5 h-5" /> Login
