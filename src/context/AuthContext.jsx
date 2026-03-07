@@ -21,33 +21,27 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const loginUser = async (email, password) => {
-        setLoading(true);
         setError(null);
         try {
             const { data } = await apiLogin(email, password);
             localStorage.setItem("user", JSON.stringify(data));
             setUser(data);
-            setLoading(false);
             return data;
         } catch (err) {
             setError(err.response?.data?.message || "Login failed");
-            setLoading(false);
             throw err;
         }
     };
 
     const registerUser = async (name, email, password) => {
-        setLoading(true);
         setError(null);
         try {
             const { data } = await apiRegister(name, email, password);
             localStorage.setItem("user", JSON.stringify(data));
             setUser(data);
-            setLoading(false);
             return data;
         } catch (err) {
             setError(err.response?.data?.message || "Registration failed");
-            setLoading(false);
             throw err;
         }
     };
