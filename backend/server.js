@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
+import messageRoutes from "./routes/messageRoutes.js";
 import User from "./models/User.js";
 
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use("/api", authRoutes);
+app.use("/api/messages", messageRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend running");
