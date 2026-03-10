@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 // Generate JWT Token
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: "7d",
+        expiresIn: "30d",
     });
 };
 
@@ -87,4 +87,56 @@ const getUsers = asyncHandler(async (req, res) => {
     res.json(users);
 });
 
-export { registerUser, loginUser, getMe, getUsers };
+// --- NEW FUNCTIONS BELOW ---
+
+// @desc    Update user profile
+// @route   PUT /api/profile/update
+// @access  Private
+const updateUserProfile = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+        user.name = req.body.name || user.name;
+        // If you want to allow email updates, uncomment below:
+        // user.email = req.body.email || user.email;
+
+        const updatedUser = await user.save();
+
+        res.json({
+            _id: updatedUser._id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            role: updatedUser.role,
+            token: generateToken(updatedUser._id),
+        });
+    } else {
+        res.status(404);
+        throw new Error("User not found");
+    }
+});
+
+// @desc    Update user password
+// @route   PUT /api/profile/password
+// @access  Private
+const updateUserPassword = asyncHandler(async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.user._id);
+
+    if (user && (await user.matchPassword(currentPassword))) {
+        user.password = newPassword;
+        await user.save();
+        res.json({ message: "Password updated successfully" });
+    } else {
+        res.status(401);
+        throw new Error("Invalid current password");
+    }
+});
+
+export {
+    registerUser,
+    loginUser,
+    getMe,
+    getUsers,
+    updateUserProfile,
+    updateUserPassword
+};
