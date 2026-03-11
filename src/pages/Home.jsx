@@ -5,16 +5,26 @@ import Navbar from "../components/Navbar";
 import CartSidebar from "../components/CartSidebar";
 import { ProductCard, BlogCard, SectionHeader } from "../Components";
 import { NEW_ARRIVALS, FORMATION_CHALLENGES, BLOG_POSTS } from "../data";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { X, ShoppingBag } from "lucide-react";
 
 const Home = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [view, setView] = useState("home");
+    const navigate = useNavigate();
     const { addToCart } = useCart();
+    const [formData, setFormData] = useState({ name: "", email: "", message: "", newsletter: false });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
     const handleAddToCart = (item) => {
         addToCart(item);
         setIsCartOpen(true);
+        setSelectedProduct(null); // Close the modal if it's open
     };
 
     if (view === "checkout") {
@@ -26,8 +36,32 @@ const Home = () => {
         );
     }
 
+    const handleFormSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!formData.name || !formData.email || !formData.message) {
+            toast.error("Please fill in all required fields!");
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+            const response = await axios.post('http://localhost:5000/api/messages', formData);
+            if (response.status === 201) {
+                toast.success("Message sent successfully!");
+                setFormData({ name: "", email: "", message: "", newsletter: false });
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to send message. Please try again.");
+            console.error("Error submitting form:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <div className="font-sans min-h-screen flex flex-col bg-stone-50 text-rubrik-navy selection:bg-rubrik-red selection:text-white">
+            <ToastContainer position="bottom-right" />
             <Navbar
                 isMenuOpen={isMenuOpen}
                 setIsMenuOpen={setIsMenuOpen}
@@ -88,7 +122,7 @@ const Home = () => {
                     <SectionHeader title="Store Highlights" link="/store" />
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 md:gap-8">
                         {NEW_ARRIVALS.map((item) => (
-                            <div key={item.id} onClick={() => handleAddToCart(item)}>
+                            <div key={item.id} onClick={() => setSelectedProduct(item)} className="cursor-pointer">
                                 <ProductCard item={item} />
                             </div>
                         ))}
@@ -163,7 +197,7 @@ const Home = () => {
                     <SectionHeader title="Formation Challenges" link="/challenges" />
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {FORMATION_CHALLENGES.map((item) => (
-                            <div key={item.id} onClick={() => handleAddToCart(item)}>
+                            <div key={item.id} onClick={() => navigate(`/challenges/${item.id}`)} className="cursor-pointer">
                                 <ProductCard item={item} showPrice={false} />
                             </div>
                         ))}
@@ -176,7 +210,9 @@ const Home = () => {
                         <SectionHeader title="Reflections" link="/blog" />
                         <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
                             {BLOG_POSTS.map((post) => (
-                                <BlogCard key={post.id} post={post} />
+                                <div key={post.id} onClick={() => navigate(`/blog/${post.id}`)} className="h-full">
+                                    <BlogCard post={post} />
+                                </div>
                             ))}
                         </div>
                     </div>
@@ -198,33 +234,42 @@ const Home = () => {
                             </p>
                             <form
                                 className="flex flex-col gap-4 text-left"
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    alert("Message Sent!");
-                                }}
+                                onSubmit={handleFormSubmit}
                             >
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <input
                                         type="text"
                                         className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/60 focus:bg-white focus:text-rubrik-red outline-none transition-all"
                                         placeholder="Name"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        disabled={isSubmitting}
                                     />
                                     <input
                                         type="email"
                                         className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/60 focus:bg-white focus:text-rubrik-red outline-none transition-all"
                                         placeholder="Email"
+                                        value={formData.email}
+                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        disabled={isSubmitting}
                                     />
                                 </div>
                                 <textarea
                                     rows="4"
                                     className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/60 focus:bg-white focus:text-rubrik-red outline-none transition-all"
                                     placeholder="How can we help?"
+                                    value={formData.message}
+                                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                    disabled={isSubmitting}
                                 />
                                 <div className="flex items-center gap-3 my-2">
                                     <input
                                         type="checkbox"
                                         id="newsletter"
                                         className="w-5 h-5 accent-white cursor-pointer"
+                                        checked={formData.newsletter}
+                                        onChange={(e) => setFormData({ ...formData, newsletter: e.target.checked })}
+                                        disabled={isSubmitting}
                                     />
                                     <label
                                         htmlFor="newsletter"
@@ -233,8 +278,12 @@ const Home = () => {
                                         Join the newsletter for weekly reflections.
                                     </label>
                                 </div>
-                                <button className="bg-white text-rubrik-red font-bold py-4 px-8 rounded-xl mt-4 w-full hover:bg-rubrik-navy hover:text-white transition-all shadow-lg text-lg">
-                                    Send Message
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="bg-white text-rubrik-red font-bold py-4 px-8 rounded-xl mt-4 w-full hover:bg-rubrik-navy hover:text-white transition-all shadow-lg text-lg disabled:opacity-70 disabled:cursor-not-allowed"
+                                >
+                                    {isSubmitting ? "Sending..." : "Send Message"}
                                 </button>
                             </form>
                         </div>
@@ -343,6 +392,74 @@ const Home = () => {
                     </div>
                 </footer>
             </main>
+
+            {/* PRODUCT POPUP MODAL */}
+            {selectedProduct && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-rubrik-navy/50 backdrop-blur-sm transition-opacity duration-300"
+                    onClick={() => setSelectedProduct(null)}
+                >
+                    <div
+                        className="bg-white rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row transform transition-all duration-300 animate-in fade-in zoom-in-95"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="md:w-1/2 relative h-64 md:h-auto">
+                            <img
+                                src={selectedProduct.image}
+                                alt={selectedProduct.title}
+                                className="w-full h-full object-cover"
+                            />
+                            <button
+                                onClick={() => setSelectedProduct(null)}
+                                className="absolute top-4 left-4 bg-white/80 p-2 rounded-full md:hidden text-rubrik-navy hover:bg-white"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div className="md:w-1/2 p-8 flex flex-col">
+                            <div className="flex justify-between items-start mb-2">
+                                <span className="text-xs font-bold uppercase tracking-wider text-rubrik-red">
+                                    {selectedProduct.category}
+                                </span>
+                                <button
+                                    onClick={() => setSelectedProduct(null)}
+                                    className="text-rubrik-navy/50 hover:text-rubrik-navy hidden md:block transition-colors"
+                                >
+                                    <X size={24} />
+                                </button>
+                            </div>
+
+                            <h3 className="text-2xl font-bold text-rubrik-navy mb-2 leading-tight">
+                                {selectedProduct.title}
+                            </h3>
+
+                            {selectedProduct.price && (
+                                <p className="text-xl font-bold text-rubrik-navy mb-4">
+                                    ₹{selectedProduct.price}
+                                </p>
+                            )}
+
+                            {selectedProduct.duration && (
+                                <p className="inline-block px-3 py-1 bg-stone-100 text-sm font-medium rounded-full text-rubrik-navy/80 mb-4 w-fit">
+                                    {selectedProduct.duration}
+                                </p>
+                            )}
+
+                            <p className="text-rubrik-navy/70 mb-8 flex-grow leading-relaxed">
+                                {selectedProduct.description || "A wonderful addition to your faith journey."}
+                            </p>
+
+                            <button
+                                onClick={() => handleAddToCart(selectedProduct)}
+                                className="w-full bg-rubrik-red text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-red-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                            >
+                                <ShoppingBag size={20} />
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

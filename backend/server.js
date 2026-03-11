@@ -3,9 +3,13 @@ import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
+<<<<<<< HEAD
 // 1. Import the new download routes
 import adminRoutes from "./routes/adminRoutes.js";
 import downloadRoutes from "./routes/downloadRoutes.js";
+=======
+import messageRoutes from "./routes/messageRoutes.js";
+>>>>>>> 8e2320f7ca021be1fb6eaba9a3adb843af72eea1
 import User from "./models/User.js";
 
 dotenv.config();
@@ -20,8 +24,12 @@ app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use("/api", authRoutes);
+<<<<<<< HEAD
 app.use("/api/admin", adminRoutes);
 app.use("/api/downloads", downloadRoutes);
+=======
+app.use("/api/messages", messageRoutes);
+>>>>>>> 8e2320f7ca021be1fb6eaba9a3adb843af72eea1
 
 app.get("/", (req, res) => {
   res.send("Backend running");

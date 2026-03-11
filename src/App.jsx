@@ -9,6 +9,8 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import Home from "./pages/Home";
+import ChallengeDetails from "./pages/ChallengeDetails";
+import BlogPost from "./pages/BlogPost";
 
 // Components
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -26,6 +28,8 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/challenges/:id" element={<ChallengeDetails />} />
+              <Route path="/blog/:id" element={<BlogPost />} />
 
               {/* Protected User Route */}
               <Route element={<ProtectedRoute allowedRoles={['user', 'admin']} />}>
