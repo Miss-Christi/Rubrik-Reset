@@ -58,7 +58,9 @@ const Navbar = ({ isMenuOpen, setIsMenuOpen, onOpenCart }) => {
                         </Link>
                     )}
 
-                    <Heart className="w-6 h-6 cursor-pointer text-white/80 hover:text-white transition-all" />
+                    <Link to="/wishlist" className="relative cursor-pointer text-white/80 hover:text-white transition-all">
+                        <Heart className="w-6 h-6" />
+                    </Link>
                     <div
                         className="relative cursor-pointer text-white/80 hover:text-white transition-all"
                         onClick={onOpenCart}

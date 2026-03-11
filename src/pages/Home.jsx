@@ -4,8 +4,11 @@ import Checkout from "../Checkout";
 import Navbar from "../components/Navbar";
 import CartSidebar from "../components/CartSidebar";
 import { ProductCard, BlogCard, SectionHeader } from "../Components";
-import { NEW_ARRIVALS, FORMATION_CHALLENGES, BLOG_POSTS } from "../data";
+import { NEW_ARRIVALS, BLOG_POSTS } from "../data";
 import { useNavigate } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
+import { useContext, useEffect } from "react";
+import { getChallenges, getWishlist, toggleProductWishlist, toggleChallengeWishlist } from "../services/api";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -20,6 +23,39 @@ const Home = () => {
     const [formData, setFormData] = useState({ name: "", email: "", message: "", newsletter: false });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+
+    const { user } = useContext(AuthContext);
+    const [challenges, setChallenges] = useState([]);
+    const [wishlistProducts, setWishlistProducts] = useState(new Set());
+    const [wishlistChallenges, setWishlistChallenges] = useState(new Set());
+
+    useEffect(() => {
+        getChallenges().then(res => setChallenges(res.data)).catch(console.error);
+        if (user) {
+            getWishlist().then(res => {
+                setWishlistProducts(new Set(res.data.products.map(p => p._id || p)));
+                setWishlistChallenges(new Set(res.data.challenges.map(c => c._id || c)));
+            }).catch(console.error);
+        }
+    }, [user]);
+
+    const handleWishlistProduct = async (id) => {
+        if (!user) { toast.error("Please login to wishlist items"); return; }
+        try {
+            const res = await toggleProductWishlist(id);
+            setWishlistProducts(new Set(res.data));
+            toast.success("Wishlist updated!");
+        } catch (e) { toast.error("Failed to update wishlist"); }
+    };
+
+    const handleWishlistChallenge = async (id) => {
+        if (!user) { toast.error("Please login to wishlist items"); return; }
+        try {
+            const res = await toggleChallengeWishlist(id);
+            setWishlistChallenges(new Set(res.data));
+            toast.success("Wishlist updated!");
+        } catch (e) { toast.error("Failed to update wishlist"); }
+    };
 
     const handleAddToCart = (item) => {
         addToCart(item);
@@ -123,7 +159,11 @@ const Home = () => {
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 md:gap-8">
                         {NEW_ARRIVALS.map((item) => (
                             <div key={item.id} onClick={() => setSelectedProduct(item)} className="cursor-pointer">
-                                <ProductCard item={item} />
+                                <ProductCard 
+                                    item={item} 
+                                    isWishlisted={wishlistProducts.has(item.id)}
+                                    onWishlistClick={handleWishlistProduct}
+                                />
                             </div>
                         ))}
                     </div>
@@ -196,9 +236,14 @@ const Home = () => {
                 <section className="py-24 container mx-auto px-6" id="challenges">
                     <SectionHeader title="Formation Challenges" link="/challenges" />
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        {FORMATION_CHALLENGES.map((item) => (
-                            <div key={item.id} onClick={() => navigate(`/challenges/${item.id}`)} className="cursor-pointer">
-                                <ProductCard item={item} showPrice={false} />
+                        {challenges.map((item) => (
+                            <div key={item._id} onClick={() => navigate(`/challenges/${item._id}`)} className="cursor-pointer">
+                                <ProductCard 
+                                    item={item} 
+                                    showPrice={false}
+                                    isWishlisted={wishlistChallenges.has(item._id)}
+                                    onWishlistClick={handleWishlistChallenge}
+                                />
                             </div>
                         ))}
                     </div>

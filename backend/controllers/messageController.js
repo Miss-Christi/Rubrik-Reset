@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 import Message from "../models/Message.js";
+import nodemailer from "nodemailer";
 
 // @desc    Create new message
 // @route   POST /api/messages
@@ -20,6 +21,36 @@ const createMessage = asyncHandler(async (req, res) => {
     });
 
     if (newMessage) {
+        // Send email notification using Nodemailer
+        try {
+            const transporter = nodemailer.createTransport({
+                service: "gmail",
+                auth: {
+                    user: process.env.EMAIL_USER || "therubrikreset@gmail.com",
+                    pass: process.env.EMAIL_PASS,
+                },
+            });
+
+            const mailOptions = {
+                from: process.env.EMAIL_USER || "therubrikreset@gmail.com",
+                to: "therubrikreset@gmail.com",
+                subject: `New Contact Form Submission from ${name}`,
+                text: `You have received a new message from the contact form.\n\nName: ${name}\nEmail: ${email}\nNewsletter Signup: ${newsletter ? "Yes" : "No"}\n\nMessage:\n${message}`,
+                html: `<p>You have received a new message from the contact form.</p>
+                       <p><strong>Name:</strong> ${name}</p>
+                       <p><strong>Email:</strong> ${email}</p>
+                       <p><strong>Newsletter Signup:</strong> ${newsletter ? "Yes" : "No"}</p>
+                       <p><strong>Message:</strong></p>
+                       <p>${message}</p>`,
+            };
+
+            await transporter.sendMail(mailOptions);
+            console.log("Contact form email sent successfully.");
+        } catch (error) {
+            console.error("Error sending contact form email:", error);
+            // We don't throw an error here to prevent the request from failing just because the email failed.
+        }
+
         res.status(201).json({
             _id: newMessage._id,
             name: newMessage.name,
