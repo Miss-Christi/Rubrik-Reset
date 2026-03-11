@@ -12,26 +12,28 @@ router.get("/stats", protect, admin, async (req, res) => {
         const totalUsers = await User.countDocuments();
         const totalOrders = await Purchase.countDocuments();
 
-        // Summing up revenue using MongoDB Aggregation
-        const salesData = await Purchase.aggregate([
+        // Calculate Processed Orders from Challenges
+        // We aggregate Purchases, lookup the Product, and count where category is 'Challenge'
+        const challengeData = await Purchase.aggregate([
             {
                 $lookup: {
-                    from: "products", // Ensure this matches your collection name in MongoDB
+                    from: "products",
                     localField: "productId",
                     foreignField: "_id",
                     as: "productDetails"
                 }
             },
             { $unwind: "$productDetails" },
-            { $group: { _id: null, totalSales: { $sum: "$productDetails.price" } } }
+            { $match: { "productDetails.category": "Challenge" } },
+            { $count: "challengeOrders" }
         ]);
 
-        const totalSales = salesData.length > 0 ? salesData[0].totalSales : 0;
+        const totalChallengeOrders = challengeData.length > 0 ? challengeData[0].challengeOrders : 0;
 
         res.json({
             totalUsers,
             totalOrders,
-            totalSales
+            totalChallengeOrders
         });
     } catch (error) {
         res.status(500).json({ message: "Error fetching admin stats" });
@@ -42,14 +44,15 @@ router.get("/stats", protect, admin, async (req, res) => {
 // @route   POST /api/admin/products
 router.post("/products", protect, admin, async (req, res) => {
     try {
-        const { title, category, price, fileUrl } = req.body;
+        const { title, category, price, fileUrl, days } = req.body;
 
         const product = await Product.create({
             title,
             category,
             price,
             fileUrl,
-            fileName: title.replace(/\s+/g, '_') + ".pdf" // Standardizing file name
+            days, // Added for challenges
+            fileName: title.replace(/\s+/g, '_') + (category === 'Challenge' ? '' : ".pdf") // Don't append .pdf for challenges if not needed, but keep it standard for now. Or leave as is.
         });
 
         res.status(201).json(product);

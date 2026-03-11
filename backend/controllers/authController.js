@@ -97,6 +97,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 
     if (user) {
         user.name = req.body.name || user.name;
+        user.phone = req.body.phone !== undefined ? req.body.phone : user.phone;
         // If you want to allow email updates, uncomment below:
         // user.email = req.body.email || user.email;
 
@@ -106,6 +107,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
             _id: updatedUser._id,
             name: updatedUser.name,
             email: updatedUser.email,
+            phone: updatedUser.phone,
             role: updatedUser.role,
             token: generateToken(updatedUser._id),
         });

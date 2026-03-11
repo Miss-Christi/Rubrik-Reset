@@ -1,12 +1,16 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import passport from "passport"; // Added
+import session from "express-session"; // Added
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
-// 1. Import the new download routes
 import adminRoutes from "./routes/adminRoutes.js";
 import downloadRoutes from "./routes/downloadRoutes.js";
+import googleAuthRoutes from "./routes/auth.js"; // Added (Assuming your new file is routes/auth.js)
+import userRoutes from "./routes/userRoutes.js"; // Added
 import User from "./models/User.js";
+import passportConfig from "./config/passport.js"; // Added
 
 dotenv.config();
 
@@ -14,14 +18,35 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
+// Initialize Passport Config
+passportConfig(passport);
+
+// Updated CORS configuration for credentials and specific origin
+app.use(cors({
+  origin: "http://localhost:5175", // Your React/Vite port
+  credentials: true                // THIS IS MANDATORY FOR COOKIES
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Session Middleware (Required for Google OAuth)
+app.use(session({
+  secret: process.env.JWT_SECRET,
+  resave: false,
+  saveUninitialized: false
+}));
+
+// Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes
 app.use("/api", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/user", userRoutes); // Added
 app.use("/api/downloads", downloadRoutes);
+app.use("/auth", googleAuthRoutes); // Added for Google Auth
 
 app.get("/", (req, res) => {
   res.send("Backend running");

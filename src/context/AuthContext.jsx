@@ -46,9 +46,26 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const logout = () => {
-        localStorage.removeItem("user");
-        setUser(null);
+    const logout = async () => {
+        try {
+            // 1. Clear from localStorage so useEffect doesn't auto-login
+            localStorage.removeItem("user");
+
+            // 2. Clear the user from your React state
+            setUser(null);
+
+            // 3. Inform backend (ignoring errors if no axios imported or backend offline)
+            try {
+                // Dynamically import axios so we don't crash if not at top level
+                const axios = (await import("axios")).default;
+                await axios.get('http://localhost:5000/auth/logout', { withCredentials: true });
+            } catch (e) { console.log('Backend logout skipped'); }
+
+            // 4. Redirect to homepage
+            window.location.href = "/";
+        } catch (err) {
+            console.error("Logout failed", err);
+        }
     };
 
     return (

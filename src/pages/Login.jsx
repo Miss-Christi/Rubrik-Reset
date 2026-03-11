@@ -19,7 +19,6 @@ const Login = () => {
         try {
             const user = await login(email, password);
             toast.success("Login successful!");
-            // Simulate a small delay for better UX
             setTimeout(() => {
                 navigate("/");
             }, 500);
@@ -155,6 +154,30 @@ const Login = () => {
                                 )}
                             </button>
                         </form>
+
+                        {/* Divider */}
+                        <div className="relative my-6">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-gray-200"></div>
+                            </div>
+                            <div className="relative flex justify-center text-sm">
+                                <span className="px-2 bg-white text-gray-500 font-medium">Or continue with</span>
+                            </div>
+                        </div>
+
+                        {/* Google Social Login / Recovery */}
+                        <div className="space-y-3">
+                            <a
+                                href="http://localhost:5000/auth/google"
+                                className="w-full flex justify-center items-center py-3 px-4 border border-gray-200 rounded-xl bg-white text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm"
+                            >
+                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5 mr-3" alt="Google" />
+                                Sign in with Google
+                            </a>
+                            <p className="text-center text-xs text-gray-500 px-4">
+                                Forgot your password? Use Google to instantly verify your identity.
+                            </p>
+                        </div>
                     </div>
 
                     {/* Footer of Card */}
