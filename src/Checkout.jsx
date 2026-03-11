@@ -115,15 +115,19 @@ export default function Checkout({ onBack, onOrderSuccess }) {
 
                 {/* QR Code Container */}
                 <div className="bg-white p-6 rounded-xl border-2 border-dashed border-rubrik-red inline-block mb-8 relative">
-                    <div className="w-48 h-48 bg-gray-50 flex flex-col items-center justify-center rounded-lg">
-                        <QrCode className="w-16 h-16 text-rubrik-navy mb-3"/>
-                        <span className="text-xs font-bold text-gray-400">RUBRIKRESET@UPI</span>
+                    <div className="w-48 h-48 bg-gray-50 flex flex-col items-center justify-center rounded-lg overflow-hidden">
+                        {/* Placeholder for QR Code */}
+                        <img 
+                          src="https://placehold.co/200x200/png?text=QR+Code+Placeholder" 
+                          alt="UPI QR Code Placeholder" 
+                          className="w-full h-full object-cover"
+                        />
                     </div>
                 </div>
 
                 <div className="flex flex-col gap-4">
-                  <a href={upiLink} className="bg-rubrik-navy/5 text-rubrik-navy font-bold py-3 rounded-xl border border-rubrik-navy/20 hover:bg-rubrik-navy hover:text-white transition-all">
-                    Pay via UPI App
+                  <a href={upiLink} target="_blank" rel="noopener noreferrer" className="bg-rubrik-navy/5 text-rubrik-navy font-bold py-3 rounded-xl border border-rubrik-navy/20 hover:bg-rubrik-navy hover:text-white transition-all">
+                    Pay / Direct Link
                   </a>
 
                   <div className="text-left bg-gray-50 p-6 rounded-xl border border-gray-200 mt-4">

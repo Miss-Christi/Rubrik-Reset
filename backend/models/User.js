@@ -29,6 +29,18 @@ const userSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Product'
         }],
+        wishlistedProducts: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Product",
+            }
+        ],
+        wishlistedChallenges: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Challenge",
+            }
+        ],
     },
     {
         timestamps: true,

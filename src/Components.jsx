@@ -1,9 +1,19 @@
-import { Star, ArrowRight, Calendar } from 'lucide-react';
+import { Star, ArrowRight, Calendar, Heart } from 'lucide-react';
 
 // 1. Standard Product Card (Colorful & Rounded)
-export const ProductCard = ({ item, showPrice = true }) => {
+export const ProductCard = ({ item, showPrice = true, isWishlisted = false, onWishlistClick }) => {
   return (
-    <div className="flex flex-col gap-3 group cursor-pointer h-full">
+    <div className="flex flex-col gap-3 group cursor-pointer h-full relative">
+      {/* Wishlist Button */}
+      {onWishlistClick && (
+        <button 
+          onClick={(e) => { e.stopPropagation(); onWishlistClick(item._id || item.id); }}
+          className="absolute top-3 right-3 z-20 bg-white/80 backdrop-blur-md p-2 rounded-full shadow-sm hover:bg-white hover:scale-110 transition-all duration-300"
+        >
+          <Heart className={`w-4 h-4 ${isWishlisted ? "fill-rubrik-red text-rubrik-red" : "text-gray-400"}`} />
+        </button>
+      )}
+
       {/* Image Container */}
       <div className="bg-gray-100 aspect-[4/5] rounded-2xl flex items-center justify-center relative overflow-hidden shadow-sm group-hover:shadow-xl group-hover:shadow-rubrik-navy/10 transition-all duration-500">
         <img 

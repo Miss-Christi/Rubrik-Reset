@@ -9,6 +9,9 @@ import adminRoutes from "./routes/adminRoutes.js";
 import downloadRoutes from "./routes/downloadRoutes.js";
 import googleAuthRoutes from "./routes/auth.js"; // Added (Assuming your new file is routes/auth.js)
 import userRoutes from "./routes/userRoutes.js"; // Added
+import messageRoutes from "./routes/messageRoutes.js";
+import challengeRoutes from "./routes/challengeRoutes.js";
+import wishlistRoutes from "./routes/wishlistRoutes.js";
 import User from "./models/User.js";
 import passportConfig from "./config/passport.js"; // Added
 
@@ -47,6 +50,9 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes); // Added
 app.use("/api/downloads", downloadRoutes);
 app.use("/auth", googleAuthRoutes); // Added for Google Auth
+app.use("/api/messages", messageRoutes);
+app.use("/api/challenges", challengeRoutes);
+app.use("/api/wishlist", wishlistRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend running");

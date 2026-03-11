@@ -9,6 +9,11 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import Home from "./pages/Home";
+import ChallengeDetails from "./pages/ChallengeDetails";
+import ChallengeDay from "./pages/ChallengeDay";
+import ChallengeLeaderboard from "./pages/ChallengeLeaderboard";
+import Wishlist from "./pages/Wishlist";
+import BlogPost from "./pages/BlogPost";
 
 // Components
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -26,10 +31,15 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/challenges/:id" element={<ChallengeDetails />} />
+              <Route path="/challenges/:id/days/:dayId" element={<ChallengeDay />} />
+              <Route path="/challenges/:id/leaderboard" element={<ChallengeLeaderboard />} />
+              <Route path="/blog/:id" element={<BlogPost />} />
 
               {/* User Only Routes (Admins can also view user dashboard) */}
               <Route element={<ProtectedRoute allowedRoles={['user', 'admin']} />}>
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/wishlist" element={<Wishlist />} />
               </Route>
 
               {/* Admin Only Routes */}

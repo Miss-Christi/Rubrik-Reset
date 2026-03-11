@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: "http://127.0.0.1:5000/api",
+    baseURL: import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api",
     timeout: 10000, // 10 seconds timeout to prevent infinite hang
 });
 
@@ -30,5 +30,18 @@ export const login = (email, password) => API.post("/auth/login", { email, passw
 export const register = (name, email, password) => API.post("/auth/register", { name, email, password });
 export const getCurrentUser = () => API.get("/auth/me");
 export const getAdminUsers = () => API.get("/admin/users");
+
+// Challenge endpoints
+export const getChallenges = () => API.get("/challenges");
+export const getChallengeById = (id) => API.get(`/challenges/${id}`);
+export const joinChallenge = (id) => API.post(`/challenges/${id}/join`);
+export const getChallengeProgress = (id) => API.get(`/challenges/${id}/progress`);
+export const submitChallengeDay = (id, dayId, submissionText) => API.post(`/challenges/${id}/days/${dayId}/submit`, { submissionText });
+export const getLeaderboard = (id) => API.get(`/challenges/${id}/leaderboard`);
+
+// Wishlist endpoints
+export const getWishlist = () => API.get("/wishlist");
+export const toggleProductWishlist = (id) => API.post(`/wishlist/products/${id}`);
+export const toggleChallengeWishlist = (id) => API.post(`/wishlist/challenges/${id}`);
 
 export default API;
