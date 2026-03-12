@@ -84,6 +84,39 @@ const Navbar = ({ isMenuOpen, setIsMenuOpen, onOpenCart }) => {
                     </button>
                 </div>
             </div>
+            
+            {/* MOBILE MENU DROPDOWN */}
+            {isMenuOpen && (
+                <div className="md:hidden absolute top-full left-0 w-full bg-rubrik-red/95 backdrop-blur-md border-t border-white/10 flex flex-col items-center py-6 gap-6 shadow-xl animate-fade-in-down z-40">
+                    {["About", "Store", "Formation", "Reflections"].map((item) => (
+                        <a
+                            key={item}
+                            href={`#${item.toLowerCase() === "store"
+                                ? "explore"
+                                : item.toLowerCase() === "reflections"
+                                    ? "blog"
+                                    : item.toLowerCase() === "formation"
+                                        ? "challenges"
+                                        : "about"
+                                }`}
+                            onClick={() => setIsMenuOpen(false)}
+                            className="text-white text-xl font-bold tracking-wide hover:text-white/80 transition-colors w-full text-center"
+                        >
+                            {item}
+                        </a>
+                    ))}
+                    
+                    {!user && (
+                        <Link 
+                            to="/login" 
+                            onClick={() => setIsMenuOpen(false)}
+                            className="bg-white text-rubrik-red font-bold px-8 py-3 rounded-full shadow-md mt-4"
+                        >
+                            Login / Sign Up
+                        </Link>
+                    )}
+                </div>
+            )}
         </nav>
     );
 };
