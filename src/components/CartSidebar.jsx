@@ -28,7 +28,7 @@ const CartSidebar = ({ isOpen, onClose, onCheckout }) => {
                         </div>
                     ) : (
                         cart.map((item) => (
-                            <div key={item.id} className="flex gap-4 items-start">
+                            <div key={item.cartItemId || item.id} className="flex gap-4 items-start">
                                 <img
                                     src={item.image}
                                     alt={item.title}
@@ -38,11 +38,16 @@ const CartSidebar = ({ isOpen, onClose, onCheckout }) => {
                                     <h3 className="font-bold text-rubrik-navy text-sm leading-tight mb-1">
                                         {item.title}
                                     </h3>
-                                    <p className="text-xs text-gray-500 mb-3">{item.category}</p>
+                                    <p className="text-xs text-gray-500 mb-1">{item.category}</p>
+                                    {item.selectedDate && (
+                                        <p className="text-xs text-rubrik-red font-medium mb-2">
+                                            Date: {new Date(item.selectedDate).toLocaleString()}
+                                        </p>
+                                    )}
                                     <div className="flex justify-between items-center">
                                         <div className="flex items-center gap-3 bg-gray-100 rounded-full px-3 py-1">
                                             <button
-                                                onClick={() => updateQuantity(item.id, -1)}
+                                                onClick={() => updateQuantity(item.cartItemId || item.id, -1)}
                                                 disabled={item.quantity <= 1}
                                             >
                                                 <Minus className="w-3 h-3" />
@@ -50,7 +55,7 @@ const CartSidebar = ({ isOpen, onClose, onCheckout }) => {
                                             <span className="text-xs font-bold w-4 text-center">
                                                 {item.quantity}
                                             </span>
-                                            <button onClick={() => updateQuantity(item.id, 1)}>
+                                            <button onClick={() => updateQuantity(item.cartItemId || item.id, 1)}>
                                                 <Plus className="w-3 h-3" />
                                             </button>
                                         </div>
@@ -59,7 +64,7 @@ const CartSidebar = ({ isOpen, onClose, onCheckout }) => {
                                                 ₹{item.price * item.quantity}
                                             </p>
                                             <button
-                                                onClick={() => removeFromCart(item.id)}
+                                                onClick={() => removeFromCart(item.cartItemId || item.id)}
                                                 className="text-[10px] text-gray-400 underline hover:text-red-500 mt-1"
                                             >
                                                 Remove

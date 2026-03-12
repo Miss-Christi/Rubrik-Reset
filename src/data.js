@@ -8,7 +8,7 @@ export const NEW_ARRIVALS = [
     category: "Lenten Journal",
     description: "A beautifully structured bullet journal to help you track your spiritual growth, goals, and daily reflections throughout the Lenten season.",
     // Image: Crown of thorns / Purple fabric
-    image: "https://images.unsplash.com/photo-1583383133387-075ed7150011?q=80&w=800&auto=format&fit=crop"
+    image: "/1.jpg"
   },
   {
     id: 2,
@@ -28,7 +28,7 @@ export const NEW_ARRIVALS = [
     category: "Adoration Journal",
     description: "Designed specifically for adoration, this journal provides guided prompts to help you memorize scripture and meditate on the Word.",
     // Image: Monstrance / Candlelight
-    image: "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=800&auto=format&fit=crop"
+    image: "/4.jpg"
   },
   {
     id: 4,
@@ -38,7 +38,7 @@ export const NEW_ARRIVALS = [
     category: "Stationery",
     description: "A minimalistic A3 weekly planner to help you organize your schedule, integrating your faith commitments with daily practicalities.",
     // Image: Aesthetic handwritten letters
-    image: "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?q=80&w=800&auto=format&fit=crop"
+    image: "/2.jpg"
   },
   {
     id: 5,
@@ -48,7 +48,7 @@ export const NEW_ARRIVALS = [
     category: "Gift Kit",
     description: "A comprehensive bundle of printable sheets designed to complement your Growth Compass journal with additional layouts and trackers.",
     // Image: Rustic table with bible and coffee
-    image: "https://images.unsplash.com/photo-1496483526623-c048295f832e?q=80&w=800&auto=format&fit=crop"
+    image: "/5.jpg"
   },
   {
     id: 6,
@@ -128,6 +128,116 @@ export const FORMATION_CHALLENGES = [
     // Image: Plant/Nature
     image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop"
   },
+  {
+    id: 105,
+    title: "Train the Trainer Batch 3",
+    rating: 5,
+    category: "Workshop",
+    duration: "Half Day",
+    description: "Understand the YOUCAT DNA principles, charism, and get hands-on experience with YOUCAT tools. Build new tools and see best practices.",
+    price: "0", 
+    isBooking: false,
+    image: "https://images.unsplash.com/photo-1544531586-fde5298cdd40?q=80&w=800&auto=format&fit=crop"
+  },
+  {
+    id: 106,
+    title: "YOUCAT Barefoot Missionary",
+    rating: 5,
+    category: "Mission",
+    duration: "2 Years",
+    description: "Read the YOUCAT + DOCAT + Bible in 2 years. Do mission with the YOUCAT charism in your context and learn to pray with the saints.",
+    price: "0",
+    isBooking: false,
+    image: "https://images.unsplash.com/photo-1493612276216-ee3925520721?q=80&w=800&auto=format&fit=crop"
+  },
+  {
+    id: 107,
+    title: "YOUCAT Creatives ABCD Module",
+    rating: 5,
+    category: "Course",
+    duration: "Self-paced",
+    description: "Train YOUCAT Creatives to design digital content like posters, reels, blogs, and newsletters aligning to the books and charism of YOUCAT.",
+    price: "0",
+    isBooking: false,
+    image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=800&auto=format&fit=crop"
+  },
+  {
+    id: 108,
+    title: "YOUCAT Starter",
+    rating: 5,
+    category: "Course",
+    duration: "Self-paced",
+    description: "The best starter course to get you kickstarted with key facts about the YOUCAT charism and how to use the books! Includes simple digital tools.",
+    price: "0",
+    isBooking: false,
+    image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=800&auto=format&fit=crop"
+  },
+  {
+    id: 109,
+    title: "Worship Rubrics Workshop",
+    rating: 5,
+    category: "Workshop",
+    duration: "15 Sessions",
+    description: "Learn worship leading, song selection, charisms in worship, liturgical and personal worship throughout 15 online sessions.",
+    price: "0",
+    isBooking: false,
+    image: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=800&auto=format&fit=crop"
+  },
+  {
+    id: 110,
+    title: "DOCAT - How to manage your money",
+    rating: 5,
+    category: "Mentoring",
+    duration: "6 Months",
+    description: "6 month mentoring framework with materials shared on Whatsapp and one-to-one mentoring by a Chartered Accountant to make a personal investment plan.",
+    price: "0",
+    isBooking: false,
+    image: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=800&auto=format&fit=crop"
+  },
+  {
+    id: 111,
+    title: "YOUCAT Parish/Youth group Program Kit",
+    rating: 5,
+    category: "Toolkit",
+    duration: "1 Year",
+    price: "506",
+    description: "Resources to run YOUCAT for one year in a parish or youth group setting. Includes monthly zoom training for leaders.",
+    isBooking: false,
+    image: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=800&auto=format&fit=crop"
+  },
+  {
+    id: 112,
+    title: "The Precious Blood prayer challenge",
+    rating: 5,
+    category: "Challenge",
+    duration: "Multi-day",
+    description: "Do you need a life reset? Pray the precious blood prayer on each bead of the rosary to receive tangible grace. 31 checkpoints.",
+    price: "0",
+    isBooking: false,
+    image: "https://images.unsplash.com/photo-1505506927361-b84175396652?q=80&w=800&auto=format&fit=crop"
+  },
+  {
+    id: 113,
+    title: "The Precious Blood prayer challenge - 2",
+    rating: 5,
+    category: "Challenge",
+    duration: "Multi-day",
+    description: "Do you feel stagnant? Pray the words 'Most precious blood of Jesus Christ, save us and the whole world' for 31 checkpoints.",
+    price: "0",
+    isBooking: false,
+    image: "https://images.unsplash.com/photo-1605353132645-0d33e69eb858?q=80&w=800&auto=format&fit=crop"
+  },
+  {
+    id: 114,
+    title: "DOCAT Financial Planning Mentoring with an expert",
+    rating: 5,
+    category: "1:1 Session",
+    duration: "45 mins",
+    price: "51",
+    description: "Learn why it is important to start saving early, the Catholic way to handle money, and clarify doubts with your personal income. (Select a date slot when checking out).",
+    isBooking: true,
+    image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=800&auto=format&fit=crop"
+  }
 ];
 
 // --- BLOG POSTS ---

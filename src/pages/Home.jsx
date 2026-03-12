@@ -263,6 +263,27 @@ const Home = () => {
                     </div>
                 </section>
 
+                {/* SMALL BUSINESSES */}
+                <section className="py-24 bg-stone-50 border-t border-stone-200" id="small-businesses">
+                    <div className="container mx-auto px-6">
+                        <SectionHeader title="Small Businesses We Support" link="#" />
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <a href="https://docs.google.com/forms/d/1g19_WPoTHaMRBhOaKnBbB-oiARysVvqnf4HpM9IQFaA/edit?chromeless=1" target="_blank" rel="noreferrer" className="block bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow border border-stone-100 text-center hover:-translate-y-1">
+                                <h3 className="text-xl font-bold text-rubrik-navy mb-2">Heirloom Rosary</h3>
+                                <p className="text-sm text-stone-500">Handcrafted, beautiful rosaries made with care and devotion.</p>
+                            </a>
+                            <a href="https://agape-creations-store.vercel.app/" target="_blank" rel="noreferrer" className="block bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow border border-stone-100 text-center hover:-translate-y-1">
+                                <h3 className="text-xl font-bold text-rubrik-navy mb-2">Agape Creations</h3>
+                                <p className="text-sm text-stone-500">Faith-inspired goods and accessories to share His love.</p>
+                            </a>
+                            <div className="block bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow border border-stone-100 text-center hover:-translate-y-1">
+                                <h3 className="text-xl font-bold text-rubrik-navy mb-2">Painting by Martha</h3>
+                                <p className="text-sm text-stone-500">Beautiful, hand-painted artwork to inspire and uplift the soul.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 {/* CONTACT */}
                 <section className="py-24 flex justify-center px-4" id="contact">
                     <div className="w-full max-w-4xl bg-rubrik-red rounded-[2.5rem] p-8 md:p-16 shadow-2xl shadow-rubrik-red/30 text-center relative overflow-hidden">
@@ -494,8 +515,25 @@ const Home = () => {
                                 {selectedProduct.description || "A wonderful addition to your faith journey."}
                             </p>
 
+                            {selectedProduct.isBooking && (
+                                <div className="mb-6">
+                                    <label className="block text-sm font-bold text-rubrik-navy mb-2">Select a Date & Time:</label>
+                                    <input 
+                                        type="datetime-local" 
+                                        className="w-full p-3 rounded-xl bg-stone-50 border border-stone-200 text-rubrik-navy outline-none focus:border-rubrik-red transition-all"
+                                        onChange={(e) => setSelectedProduct({...selectedProduct, selectedDate: e.target.value})}
+                                    />
+                                </div>
+                            )}
+
                             <button
-                                onClick={() => handleAddToCart(selectedProduct)}
+                                onClick={() => {
+                                    if (selectedProduct.isBooking && !selectedProduct.selectedDate) {
+                                        toast.error("Please select a date for the session.");
+                                        return;
+                                    }
+                                    handleAddToCart(selectedProduct);
+                                }}
                                 className="w-full bg-rubrik-red text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-red-700 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
                             >
                                 <ShoppingBag size={20} />

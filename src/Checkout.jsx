@@ -70,11 +70,16 @@ export default function Checkout({ onBack, onOrderSuccess }) {
             <h2 className="text-2xl font-serif font-bold text-rubrik-navy mb-6">Order Summary</h2>
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
               {cart.map((item) => (
-                <div key={item.id} className="flex justify-between items-center py-4 border-b border-gray-50 last:border-0">
+                <div key={item.cartItemId || item.id} className="flex justify-between items-center py-4 border-b border-gray-50 last:border-0">
                   <div className="flex items-center gap-4">
                     <img src={item.image} alt={item.title} className="w-16 h-16 rounded-lg object-cover" />
                     <div>
                       <h4 className="font-bold text-rubrik-navy text-sm">{item.title}</h4>
+                      {item.selectedDate && (
+                        <p className="text-xs text-rubrik-red font-medium my-0.5">
+                          Date: {new Date(item.selectedDate).toLocaleString()}
+                        </p>
+                      )}
                       <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
                     </div>
                   </div>
