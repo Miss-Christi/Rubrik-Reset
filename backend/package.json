@@ -17,10 +17,13 @@
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "express-async-handler": "^1.2.0",
+    "express-session": "^1.19.0",
     "express-validator": "^7.3.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.1.4",
-    "nodemailer": "^8.0.2"
+    "nodemailer": "^8.0.2",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"

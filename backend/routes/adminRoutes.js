@@ -40,6 +40,48 @@ router.get("/stats", protect, admin, async (req, res) => {
     }
 });
 
+// @desc    Get all products
+// @route   GET /api/admin/products
+router.get("/products", protect, admin, async (req, res) => {
+    try {
+        const products = await Product.find({});
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching products" });
+    }
+});
+
+// @desc    Get all users
+// @route   GET /api/admin/users
+router.get("/users", protect, admin, async (req, res) => {
+    try {
+        const users = await User.find({}).select("-password");
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching users" });
+    }
+});
+
+// @desc    Get challenge participation history
+// @route   GET /api/admin/challenges
+router.get("/challenges", protect, admin, async (req, res) => {
+    try {
+        // Find purchases that correspond to challenges
+        const challengePurchases = await Purchase.find({}).populate("productId userId");
+        const challenges = challengePurchases
+            .filter(p => p.productId && p.productId.category === "Challenge")
+            .map(p => ({
+                userName: p.userId ? p.userId.name : "Unknown User",
+                challengeTitle: p.productId.title,
+                createdAt: p.purchaseDate,
+                status: "active"
+            }));
+        res.json(challenges);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching challenge stats" });
+    }
+});
+
 // @desc    Add a new product
 // @route   POST /api/admin/products
 router.post("/products", protect, admin, async (req, res) => {

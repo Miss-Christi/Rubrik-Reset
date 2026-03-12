@@ -26,7 +26,7 @@ passportConfig(passport);
 
 // Updated CORS configuration for credentials and specific origin
 app.use(cors({
-  origin: "http://localhost:5175", // Your React/Vite port
+  origin: ["http://localhost:5173", "http://localhost:5175", "http://127.0.0.1:5173"], // Your React/Vite port
   credentials: true                // THIS IS MANDATORY FOR COOKIES
 }));
 

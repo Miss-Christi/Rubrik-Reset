@@ -26,9 +26,9 @@ API.interceptors.response.use(
     }
 );
 
-export const login = (email, password) => API.post("/auth/login", { email, password });
-export const register = (name, email, password) => API.post("/auth/register", { name, email, password });
-export const getCurrentUser = () => API.get("/auth/me");
+export const login = (email, password) => API.post("/login", { email, password });
+export const register = (name, email, password) => API.post("/register", { name, email, password });
+export const getCurrentUser = () => API.get("/me");
 export const getAdminUsers = () => API.get("/admin/users");
 
 // Challenge endpoints
