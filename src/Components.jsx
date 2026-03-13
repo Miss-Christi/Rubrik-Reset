@@ -7,7 +7,11 @@ export const ProductCard = ({ item, showPrice = true, isWishlisted = false, onWi
       {/* Wishlist Button */}
       {onWishlistClick && (
         <button 
-          onClick={(e) => { e.stopPropagation(); onWishlistClick(item._id || item.id); }}
+          onClick={(e) => { 
+            e.stopPropagation(); 
+            const idToUse = item._id || item.id;
+            if(idToUse) onWishlistClick(idToUse); 
+          }}
           className="absolute top-3 right-3 z-20 bg-white/80 backdrop-blur-md p-2 rounded-full shadow-sm hover:bg-white hover:scale-110 transition-all duration-300"
         >
           <Heart className={`w-4 h-4 ${isWishlisted ? "fill-rubrik-red text-rubrik-red" : "text-gray-400"}`} />
