@@ -118,10 +118,18 @@ const AdminDashboard = () => {
                 <div className={`${bgCard} rounded-[2rem] shadow-xl overflow-hidden p-2 transition-colors duration-300`}>
 
                     <div className={`p-6 pb-2 flex justify-center border-b ${borderSecondary}`}>
-                        <img src="/Rubrik_Logo.png" alt="Rubrik Reset Logo" className={`h-16 w-auto object-contain ${isDark ? "brightness-200 invert" : ""}`} />
+                        <img src="/Rubrik_Logo.png" alt="Rubrik Reset Logo" className={`h-24 w-auto object-contain ${isDark ? "brightness-200 invert" : ""}`} />
                     </div>
 
-                    <div className={`p-6 flex flex-col items-center border-b ${borderSecondary} text-center`}>
+                    <div className={`p-6 flex flex-col items-center border-b ${borderSecondary} text-center relative`}>
+                        {/* Theme Toggle in top right of Profile section */}
+                        <button
+                            onClick={() => setTheme(isDark ? "Light" : "Dark")}
+                            className={`absolute top-4 right-4 text-xs font-bold px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5 grayscale opacity-70 hover:opacity-100 ${isDark ? "bg-slate-700 text-slate-300 hover:bg-slate-600" : "bg-slate-100 text-slate-500 hover:bg-slate-200"}`}
+                        >
+                            {isDark ? "Dark 🌙" : "Light ☀️"}
+                        </button>
+
                         <div className={`h-16 w-16 ${isDark ? "bg-slate-700" : "bg-[#2A7B8E]/10"} rounded-full flex items-center justify-center ${isDark ? "text-white" : "text-[#2A7B8E]"} text-2xl font-black mb-3 shrink-0`}>
                             {user?.name?.charAt(0) || "A"}
                         </div>
@@ -142,27 +150,6 @@ const AdminDashboard = () => {
                         >
                             <span className="text-sm">Log Out</span>
                         </button>
-                    </div>
-                </div>
-
-                <div className={`${bgCard} rounded-[2rem] shadow-xl p-6 transition-colors duration-300`}>
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className={`font-bold ${textPrimary}`}>Settings</h3>
-                    </div>
-                    <div className="space-y-4">
-                        <div className={`flex justify-between items-center py-2 border-b ${borderSecondary}`}>
-                            <span className={`text-sm ${textSecondary} font-medium`}>Theme</span>
-                            <button
-                                onClick={() => setTheme(isDark ? "Light" : "Dark")}
-                                className={`text-sm ${isDark ? "text-slate-200 bg-slate-700" : "text-slate-800 bg-slate-100"} font-bold px-3 py-1 rounded-lg transition-colors`}
-                            >
-                                {theme} ⌄
-                            </button>
-                        </div>
-                        <div className={`flex justify-between items-center py-2 border-b ${borderSecondary}`}>
-                            <span className={`text-sm ${textSecondary} font-medium`}>Language</span>
-                            <span className={`text-sm ${isDark ? "text-slate-200 bg-slate-700" : "text-slate-800 bg-slate-100"} font-bold px-3 py-1 rounded-lg`}>Eng ⌄</span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -379,77 +366,81 @@ const AdminDashboard = () => {
 
 
             {/* MODALS */}
-            {showProductModal && (
-                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className={`${bgCard} rounded-[3rem] w-full max-w-lg p-10 shadow-2xl animate-in zoom-in-95 duration-200 border ${borderSecondary}`}>
-                        <h2 className={`text-2xl font-black ${textPrimary} uppercase tracking-tighter mb-8 border-b ${borderSecondary} pb-4`}>NEW DIGITAL ASSET</h2>
-                        <form onSubmit={handleAddProduct} className="space-y-6">
-                            <div>
-                                <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Product Title</label>
-                                <input type="text" required className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${isDark ? "border-slate-700" : "border-slate-200"} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} value={newProduct.title} onChange={e => setNewProduct({ ...newProduct, title: e.target.value })} />
-                            </div>
-                            <div className="grid grid-cols-2 gap-6">
+            {
+                showProductModal && (
+                    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                        <div className={`${bgCard} rounded-[3rem] w-full max-w-lg p-10 shadow-2xl animate-in zoom-in-95 duration-200 border ${borderSecondary}`}>
+                            <h2 className={`text-2xl font-black ${textPrimary} uppercase tracking-tighter mb-8 border-b ${borderSecondary} pb-4`}>NEW DIGITAL ASSET</h2>
+                            <form onSubmit={handleAddProduct} className="space-y-6">
                                 <div>
-                                    <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Price (₹)</label>
-                                    <input type="number" required className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${isDark ? "border-slate-700" : "border-slate-200"} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} value={newProduct.price} onChange={e => setNewProduct({ ...newProduct, price: e.target.value })} />
+                                    <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Product Title</label>
+                                    <input type="text" required className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${isDark ? "border-slate-700" : "border-slate-200"} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} value={newProduct.title} onChange={e => setNewProduct({ ...newProduct, title: e.target.value })} />
                                 </div>
-                                <div>
-                                    <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Category</label>
-                                    <div className="relative">
-                                        <select className={`w-full appearance-none ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${isDark ? "border-slate-700" : "border-slate-200"} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} value={newProduct.category} onChange={e => setNewProduct({ ...newProduct, category: e.target.value })}>
-                                            <option value="Poster">Poster</option>
-                                            <option value="Course">Course</option>
-                                            <option value="Template">Template</option>
-                                        </select>
-                                        <span className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none font-bold text-lg ${textSecondary}`}>⌄</span>
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Price (₹)</label>
+                                        <input type="number" required className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${isDark ? "border-slate-700" : "border-slate-200"} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} value={newProduct.price} onChange={e => setNewProduct({ ...newProduct, price: e.target.value })} />
+                                    </div>
+                                    <div>
+                                        <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Category</label>
+                                        <div className="relative">
+                                            <select className={`w-full appearance-none ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${isDark ? "border-slate-700" : "border-slate-200"} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} value={newProduct.category} onChange={e => setNewProduct({ ...newProduct, category: e.target.value })}>
+                                                <option value="Poster">Poster</option>
+                                                <option value="Course">Course</option>
+                                                <option value="Template">Template</option>
+                                            </select>
+                                            <span className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none font-bold text-lg ${textSecondary}`}>⌄</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div>
-                                <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Secure Asset Source (URL)</label>
-                                <input type="text" required placeholder="https://..." className={`w-full ${isDark ? "bg-slate-800 text-slate-300" : "bg-[#f8fafc] text-[#64748b]"} border ${isDark ? "border-slate-700" : "border-slate-200"} rounded-2xl p-4 text-sm font-medium focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} value={newProduct.fileUrl} onChange={e => setNewProduct({ ...newProduct, fileUrl: e.target.value })} />
-                            </div>
-                            <div className="flex items-center justify-between pt-8 gap-4 px-2">
-                                <button type="button" onClick={() => setShowProductModal(false)} className={`${textSecondary} text-[11px] font-black uppercase tracking-widest hover:${textPrimary} transition-colors p-4`}>Discard</button>
-                                <button type="submit" className="bg-[#ef3e36] text-white px-8 py-4 rounded-full text-[11px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20 hover:scale-[1.02] transition-transform">Deploy Asset</button>
-                            </div>
-                        </form>
+                                <div>
+                                    <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Secure Asset Source (URL)</label>
+                                    <input type="text" required placeholder="https://..." className={`w-full ${isDark ? "bg-slate-800 text-slate-300" : "bg-[#f8fafc] text-[#64748b]"} border ${isDark ? "border-slate-700" : "border-slate-200"} rounded-2xl p-4 text-sm font-medium focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} value={newProduct.fileUrl} onChange={e => setNewProduct({ ...newProduct, fileUrl: e.target.value })} />
+                                </div>
+                                <div className="flex items-center justify-between pt-8 gap-4 px-2">
+                                    <button type="button" onClick={() => setShowProductModal(false)} className={`${textSecondary} text-[11px] font-black uppercase tracking-widest hover:${textPrimary} transition-colors p-4`}>Discard</button>
+                                    <button type="submit" className="bg-[#ef3e36] text-white px-8 py-4 rounded-full text-[11px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20 hover:scale-[1.02] transition-transform">Deploy Asset</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
-            {showChallengeModal && (
-                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className={`${bgCard} rounded-[3rem] w-full max-w-lg p-10 shadow-2xl animate-in zoom-in-95 duration-200 border ${borderSecondary}`}>
-                        <h2 className={`text-2xl font-black ${textPrimary} uppercase tracking-tighter mb-8 border-b ${borderSecondary} pb-4`}>NEW CHALLENGE</h2>
-                        <form onSubmit={handleAddChallenge} className="space-y-6">
-                            <div>
-                                <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Challenge Title</label>
-                                <input type="text" required className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${isDark ? "border-slate-700" : "border-slate-200"} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} value={newChallenge.title} onChange={e => setNewChallenge({ ...newChallenge, title: e.target.value })} />
-                            </div>
-                            <div className="grid grid-cols-2 gap-6">
+            {
+                showChallengeModal && (
+                    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                        <div className={`${bgCard} rounded-[3rem] w-full max-w-lg p-10 shadow-2xl animate-in zoom-in-95 duration-200 border ${borderSecondary}`}>
+                            <h2 className={`text-2xl font-black ${textPrimary} uppercase tracking-tighter mb-8 border-b ${borderSecondary} pb-4`}>NEW CHALLENGE</h2>
+                            <form onSubmit={handleAddChallenge} className="space-y-6">
                                 <div>
-                                    <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Price (₹)</label>
-                                    <input type="number" required className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${isDark ? "border-slate-700" : "border-slate-200"} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} value={newChallenge.price} onChange={e => setNewChallenge({ ...newChallenge, price: e.target.value })} />
+                                    <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Challenge Title</label>
+                                    <input type="text" required className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${isDark ? "border-slate-700" : "border-slate-200"} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} value={newChallenge.title} onChange={e => setNewChallenge({ ...newChallenge, title: e.target.value })} />
+                                </div>
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Price (₹)</label>
+                                        <input type="number" required className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${isDark ? "border-slate-700" : "border-slate-200"} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} value={newChallenge.price} onChange={e => setNewChallenge({ ...newChallenge, price: e.target.value })} />
+                                    </div>
+                                    <div>
+                                        <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Duration (Days)</label>
+                                        <input type="number" required placeholder="e.g. 7" className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${isDark ? "border-slate-700" : "border-slate-200"} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} value={newChallenge.days} onChange={e => setNewChallenge({ ...newChallenge, days: e.target.value })} />
+                                    </div>
                                 </div>
                                 <div>
-                                    <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Duration (Days)</label>
-                                    <input type="number" required placeholder="e.g. 7" className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${isDark ? "border-slate-700" : "border-slate-200"} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} value={newChallenge.days} onChange={e => setNewChallenge({ ...newChallenge, days: e.target.value })} />
+                                    <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Secure Asset Source (URL)</label>
+                                    <input type="text" required placeholder="https://..." className={`w-full ${isDark ? "bg-slate-800 text-slate-300" : "bg-[#f8fafc] text-[#64748b]"} border ${isDark ? "border-slate-700" : "border-slate-200"} rounded-2xl p-4 text-sm font-medium focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} value={newChallenge.fileUrl} onChange={e => setNewChallenge({ ...newChallenge, fileUrl: e.target.value })} />
                                 </div>
-                            </div>
-                            <div>
-                                <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Secure Asset Source (URL)</label>
-                                <input type="text" required placeholder="https://..." className={`w-full ${isDark ? "bg-slate-800 text-slate-300" : "bg-[#f8fafc] text-[#64748b]"} border ${isDark ? "border-slate-700" : "border-slate-200"} rounded-2xl p-4 text-sm font-medium focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} value={newChallenge.fileUrl} onChange={e => setNewChallenge({ ...newChallenge, fileUrl: e.target.value })} />
-                            </div>
-                            <div className="flex items-center justify-between pt-8 gap-4 px-2">
-                                <button type="button" onClick={() => setShowChallengeModal(false)} className={`${textSecondary} text-[11px] font-black uppercase tracking-widest hover:${textPrimary} transition-colors p-4`}>Discard</button>
-                                <button type="submit" className="bg-[#ef3e36] text-white px-8 py-4 rounded-full text-[11px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20 hover:scale-[1.02] transition-transform">Create Challenge</button>
-                            </div>
-                        </form>
+                                <div className="flex items-center justify-between pt-8 gap-4 px-2">
+                                    <button type="button" onClick={() => setShowChallengeModal(false)} className={`${textSecondary} text-[11px] font-black uppercase tracking-widest hover:${textPrimary} transition-colors p-4`}>Discard</button>
+                                    <button type="submit" className="bg-[#ef3e36] text-white px-8 py-4 rounded-full text-[11px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20 hover:scale-[1.02] transition-transform">Create Challenge</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 };
 

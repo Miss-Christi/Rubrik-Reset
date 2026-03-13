@@ -11,11 +11,18 @@ export default function (passport) {
                 callbackURL: process.env.CALLBACK_URL || "http://localhost:5000/auth/google/callback",
             },
             async (accessToken, refreshToken, profile, done) => {
-                // This object matches what your MongoDB User model expects
+                const email = profile.emails[0].value;
+
+                // Check for official email domain if configured
+                const officialDomain = process.env.OFFICIAL_EMAIL_DOMAIN;
+                if (officialDomain && !email.endsWith(`@${officialDomain}`)) {
+                    return done(null, false, { message: "This email does not exist as an official user." });
+                }
+
                 const newUser = {
                     googleId: profile.id,
                     name: profile.displayName,
-                    email: profile.emails[0].value,
+                    email: email,
                     image: profile.photos[0].value,
                 };
 

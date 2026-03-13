@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import User from "../models/User.js";
 import Purchase from "../models/Purchase.js";
 import Product from "../models/Product.js";
+import UserChallenge from "../models/UserChallenge.js";
 
 // @desc    Get user downloads (Digital Assets excluding Challenges)
 // @route   GET /api/user/downloads
@@ -21,18 +22,27 @@ const getUserDownloads = asyncHandler(async (req, res) => {
 // @route   GET /api/user/challenges
 // @access  Private
 const getUserChallenges = asyncHandler(async (req, res) => {
-    const purchases = await Purchase.find({ userId: req.user._id })
-        .populate("productId");
+    // Fetch from UserChallenge instead of Purchase
+    const userChallenges = await UserChallenge.find({ user: req.user._id })
+        .populate("challenge");
 
-    // Filter to only products that exist and ARE challenges
-    const challenges = purchases
-        .filter(p => p.productId && p.productId.category === "Challenge")
-        .map(p => ({
-            id: p._id,
-            title: p.productId.title,
-            currentDay: Math.floor((new Date() - new Date(p.purchaseDate)) / (1000 * 60 * 60 * 24)) + 1,
-            totalDays: p.productId.days || 30 // Fallback if no days defined
-        }));
+    const challenges = userChallenges
+        .filter(uc => uc.challenge)
+        .map(uc => {
+            // Extract number from "30 Days" string or fallback
+            let totalDays = 30;
+            if (uc.challenge.duration) {
+                const match = uc.challenge.duration.match(/\d+/);
+                if (match) totalDays = parseInt(match[0], 10);
+            }
+
+            return {
+                id: uc.challenge._id,
+                title: uc.challenge.title,
+                currentDay: uc.completedDays + 1,
+                totalDays: totalDays
+            };
+        });
 
     res.json(challenges);
 });

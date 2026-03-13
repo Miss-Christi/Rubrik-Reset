@@ -28,6 +28,8 @@ API.interceptors.response.use(
 
 export const login = (email, password) => API.post("/login", { email, password });
 export const register = (name, email, password) => API.post("/register", { name, email, password });
+export const forgotPassword = (email) => API.post("/forgotpassword", { email });
+export const resetPassword = (token, password) => API.put(`/resetpassword/${token}`, { password });
 export const getCurrentUser = () => API.get("/me");
 export const getAdminUsers = () => API.get("/admin/users");
 

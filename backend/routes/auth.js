@@ -1,5 +1,6 @@
 import express from 'express';
 import passport from 'passport';
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
@@ -12,9 +13,15 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get('/google/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),
     (req, res) => {
-        // Successful login! Redirect to your frontend dashboard
-        // Use your real frontend URL here (like http://localhost:5175/dashboard)
-        res.redirect('http://localhost:5175/dashboard');
+        // Successful login! Generate token
+        const user = req.user;
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+            expiresIn: "30d",
+        });
+
+        // Redirect to frontend Login page with user data so it can be saved to localStorage
+        const redirectUrl = `http://localhost:5173/login?token=${token}&id=${user._id}&name=${encodeURIComponent(user.name)}&email=${encodeURIComponent(user.email)}&role=${user.role}`;
+        res.redirect(redirectUrl);
     }
 );
 

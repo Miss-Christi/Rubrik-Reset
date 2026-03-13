@@ -167,15 +167,23 @@ const Dashboard = () => {
                 <div className={`${bgCard} rounded-[2rem] shadow-xl overflow-hidden p-2 transition-colors duration-300`}>
 
                     <div className={`p-6 pb-2 flex justify-center border-b ${borderSecondary}`}>
-                        <img src="/Rubrik_Logo.png" alt="Rubrik Reset Logo" className={`h-16 w-auto object-contain ${isDark ? "brightness-200 invert" : ""}`} />
+                        <img src="/Rubrik_Logo.png" alt="Rubrik Reset Logo" className={`h-24 w-auto object-contain ${isDark ? "brightness-200 invert" : ""}`} />
                     </div>
 
-                    <div className={`p-6 flex flex-col items-center border-b ${borderSecondary} text-center`}>
+                    <div className={`p-6 flex flex-col items-center border-b ${borderSecondary} text-center relative`}>
+                        {/* Theme Toggle in top right of Profile section */}
+                        <button
+                            onClick={() => setTheme(isDark ? "Light" : "Dark")}
+                            className={`absolute top-4 right-4 text-xs font-bold px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5 grayscale opacity-70 hover:opacity-100 ${isDark ? "bg-slate-700 text-slate-300 hover:bg-slate-600" : "bg-slate-100 text-slate-500 hover:bg-slate-200"}`}
+                        >
+                            {isDark ? "Dark 🌙" : "Light ☀️"}
+                        </button>
+
                         {user?.image ? (
                             <img src={user.image} alt="User" className="w-16 h-16 rounded-full border-2 border-slate-200 mb-3 shrink-0" />
                         ) : (
                             <div className={`h-16 w-16 ${isDark ? "bg-slate-700" : "bg-slate-100"} rounded-full flex items-center justify-center ${isDark ? "text-white" : "text-slate-500"} text-2xl font-black mb-3 shrink-0`}>
-                                {user?.name?.charAt(0) || "U"}
+                                {(user?.email?.charAt(0) || user?.name?.charAt(0) || "U").toUpperCase()}
                             </div>
                         )}
                         <div>
@@ -199,27 +207,6 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                {/* Settings Card */}
-                <div className={`${bgCard} rounded-[2rem] shadow-xl p-6 transition-colors duration-300`}>
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className={`font-bold ${textPrimary}`}>Settings</h3>
-                    </div>
-                    <div className="space-y-4">
-                        <div className={`flex justify-between items-center py-2 border-b ${borderSecondary}`}>
-                            <span className={`text-sm ${textSecondary} font-medium`}>Theme</span>
-                            <button
-                                onClick={() => setTheme(isDark ? "Light" : "Dark")}
-                                className={`text-sm ${isDark ? "text-slate-200 bg-slate-700" : "text-slate-800 bg-slate-100"} font-bold px-3 py-1 rounded-lg transition-colors`}
-                            >
-                                {theme} ⌄
-                            </button>
-                        </div>
-                        <div className={`flex justify-between items-center py-2 border-b ${borderSecondary}`}>
-                            <span className={`text-sm ${textSecondary} font-medium`}>Language</span>
-                            <span className={`text-sm ${isDark ? "text-slate-200 bg-slate-700" : "text-slate-800 bg-slate-100"} font-bold px-3 py-1 rounded-lg`}>Eng ⌄</span>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             {/* RIGHT COLUMN - Main Workspace */}
@@ -285,7 +272,7 @@ const Dashboard = () => {
                                                 <td className={`p-5 font-bold ${textPrimary}`}>{c.title}</td>
                                                 <td className={`p-5 font-medium ${textSecondary}`}>Day {c.currentDay} of {c.totalDays}</td>
                                                 <td className="p-5 text-right">
-                                                    <button className="text-xs font-bold text-[#ef3e36] hover:underline uppercase tracking-widest transition">View Prompt</button>
+                                                    <button onClick={() => navigate(`/challenges/${c.id}`)} className="text-xs font-bold text-[#ef3e36] hover:underline uppercase tracking-widest transition">View Challenge</button>
                                                 </td>
                                             </tr>
                                         ))}

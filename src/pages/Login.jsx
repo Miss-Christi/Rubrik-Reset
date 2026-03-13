@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import AuthContext from "../context/AuthContext";
@@ -12,6 +12,23 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { login } = useContext(AuthContext);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get("token");
+
+        if (token) {
+            const googleUser = {
+                _id: urlParams.get("id"),
+                name: urlParams.get("name"),
+                email: urlParams.get("email"),
+                role: urlParams.get("role"),
+                token: token,
+            };
+            localStorage.setItem("user", JSON.stringify(googleUser));
+            window.location.href = "/"; // Force full reload so AuthContext picks up the new localStorage token
+        }
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -127,12 +144,12 @@ const Login = () => {
                                     </label>
                                 </div>
                                 <div className="text-sm">
-                                    <a
-                                        href="#"
+                                    <Link
+                                        to="/forgot-password"
                                         className="font-medium text-rubrik-blue hover:text-rubrik-navy transition-colors"
                                     >
                                         Forgot password?
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
 

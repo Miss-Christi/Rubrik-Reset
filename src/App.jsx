@@ -12,6 +12,8 @@ import Home from "./pages/Home";
 import ChallengeDetails from "./pages/ChallengeDetails";
 import ChallengeDay from "./pages/ChallengeDay";
 import ChallengeLeaderboard from "./pages/ChallengeLeaderboard";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Wishlist from "./pages/Wishlist";
 import BlogPost from "./pages/BlogPost";
 
@@ -31,6 +33,8 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
               <Route path="/challenges/:id" element={<ChallengeDetails />} />
               <Route path="/challenges/:id/days/:dayId" element={<ChallengeDay />} />
               <Route path="/challenges/:id/leaderboard" element={<ChallengeLeaderboard />} />

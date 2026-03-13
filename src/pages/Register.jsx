@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
     User,
@@ -29,6 +29,23 @@ const Register = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { register } = useContext(AuthContext);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get("token");
+
+        if (token) {
+            const googleUser = {
+                _id: urlParams.get("id"),
+                name: urlParams.get("name"),
+                email: urlParams.get("email"),
+                role: urlParams.get("role"),
+                token: token,
+            };
+            localStorage.setItem("user", JSON.stringify(googleUser));
+            window.location.href = "/"; // Force full reload so AuthContext picks up the new localStorage token
+        }
+    }, []);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -316,6 +333,27 @@ const Register = () => {
                                 )}
                             </button>
                         </form>
+
+                        {/* Divider */}
+                        <div className="relative my-6">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-gray-200"></div>
+                            </div>
+                            <div className="relative flex justify-center text-sm">
+                                <span className="px-2 bg-white text-gray-500 font-medium">Or continue with</span>
+                            </div>
+                        </div>
+
+                        {/* Google Social Login */}
+                        <div className="space-y-3">
+                            <a
+                                href="http://localhost:5000/auth/google"
+                                className="w-full flex justify-center items-center py-3 px-4 border border-gray-200 rounded-xl bg-white text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm"
+                            >
+                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5 mr-3" alt="Google" />
+                                Sign up with Google
+                            </a>
+                        </div>
                     </div>
 
                     {/* Footer of Card */}

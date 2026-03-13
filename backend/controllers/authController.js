@@ -1,6 +1,8 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
+import { Resend } from "resend";
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -18,6 +20,13 @@ const registerUser = asyncHandler(async (req, res) => {
     if (!name || !email || !password) {
         res.status(400);
         throw new Error("Please add all fields");
+    }
+
+    // Require specific email domain (e.g. gmail.com) for official accounts
+    const officialDomain = process.env.OFFICIAL_EMAIL_DOMAIN || "gmail.com";
+    if (!email.toLowerCase().endsWith(`@${officialDomain}`)) {
+        res.status(400);
+        throw new Error(`Only official @${officialDomain} emails are allowed to sign up.`);
     }
 
     // Check if user exists
@@ -54,6 +63,13 @@ const registerUser = asyncHandler(async (req, res) => {
 // @access  Public
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
+
+    // Require specific email domain (e.g. gmail.com) for official accounts
+    const officialDomain = process.env.OFFICIAL_EMAIL_DOMAIN || "gmail.com";
+    if (!email.toLowerCase().endsWith(`@${officialDomain}`)) {
+        res.status(401);
+        throw new Error(`Only official @${officialDomain} emails are allowed to log in.`);
+    }
 
     // Check for user email
     const user = await User.findOne({ email });
@@ -134,11 +150,103 @@ const updateUserPassword = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Forgot Password (generate token & send email)
+// @route   POST /api/auth/forgotpassword
+// @access  Public
+const forgotPassword = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        res.status(404);
+        throw new Error("There is no user with that email");
+    }
+
+    if (user.googleId) {
+        res.status(400);
+        throw new Error("This account was created with Google. Please use 'Sign in with Google'.");
+    }
+
+    // Generate token
+    const resetToken = crypto.randomBytes(20).toString("hex");
+
+    // Hash token and set to resetPasswordToken field
+    user.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    await user.save();
+
+    // Create reset url
+    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+
+    // HTML Message
+    const message = `
+        <h1>You have requested a password reset</h1>
+        <p>Please click on the following link to reset your password:</p>
+        <a href="${resetUrl}" clicktracking="off">${resetUrl}</a>
+        <p>If you did not request this, please ignore this email.</p>
+    `;
+
+    try {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+            from: 'Rubrik Reset <onboarding@resend.dev>',
+            to: user.email,
+            subject: 'Password Reset Request',
+            html: message
+        });
+
+        res.status(200).json({ success: true, data: "Email sent" });
+    } catch (err) {
+        console.error(err);
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+        await user.save();
+
+        res.status(500);
+        throw new Error("Email could not be sent");
+    }
+});
+
+// @desc    Reset Password
+// @route   PUT /api/auth/resetpassword/:resetToken
+// @access  Public
+const resetPassword = asyncHandler(async (req, res) => {
+    // Get hashed token
+    const resetPasswordToken = crypto
+        .createHash("sha256")
+        .update(req.params.resetToken)
+        .digest("hex");
+
+    const user = await User.findOne({
+        resetPasswordToken,
+        resetPasswordExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
+        res.status(400);
+        throw new Error("Invalid or expired token");
+    }
+
+    // Set new password
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+
+    res.status(200).json({
+        success: true,
+        token: generateToken(user._id)
+    });
+});
+
 export {
     registerUser,
     loginUser,
     getMe,
     getUsers,
     updateUserProfile,
-    updateUserPassword
+    updateUserPassword,
+    forgotPassword,
+    resetPassword
 };

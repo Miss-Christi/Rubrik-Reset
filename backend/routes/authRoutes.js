@@ -6,6 +6,8 @@ import {
     getUsers,
     updateUserProfile,    // New Controller Function
     updateUserPassword,   // New Controller Function
+    forgotPassword,
+    resetPassword,
 } from "../controllers/authController.js";
 import { protect, admin } from "../middleware/authMiddleware.js";
 import Purchase from "../models/Purchase.js"; // Needed for the download check
@@ -15,6 +17,8 @@ const router = express.Router();
 // --- Existing Routes ---
 router.post("/register", registerUser);
 router.post("/login", loginUser);
+router.post("/forgotpassword", forgotPassword);
+router.put("/resetpassword/:resetToken", resetPassword);
 router.get("/me", protect, getMe);
 router.get("/admin/users", protect, admin, getUsers);
 
