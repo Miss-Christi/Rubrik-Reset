@@ -5,6 +5,7 @@ import { ArrowLeft, BookOpen, CheckCircle, Quote, Star, UserCircle2 } from "luci
 import { getChallengeById, submitChallengeDay, getChallengeProgress } from "../services/api";
 import AuthContext from "../context/AuthContext";
 import { toast } from "react-toastify";
+import { FORMATION_CHALLENGES } from "../data";
 
 const ChallengeDay = () => {
     const { id, dayId } = useParams();
@@ -47,8 +48,30 @@ const ChallengeDay = () => {
                     navigate("/login");
                 }
             } catch (error) {
-                console.error(error);
-                toast.error("Failed to load");
+                console.error("Failed to load from API, falling back to static data.");
+                const staticChallenge = FORMATION_CHALLENGES.find(c => c.id.toString() === id || c._id === id);
+                if (staticChallenge) {
+                    setChallenge(staticChallenge);
+                    
+                    if (staticChallenge.modules) {
+                        const mockDays = staticChallenge.modules.map((mod, index) => ({
+                            _id: `mock-${index}`,
+                            dayNumber: index + 1,
+                            points: 10,
+                            content: { theme: mod.title, reading: mod.description, task: "Reflect on this module." }
+                        }));
+                        const currentDay = mockDays.find(d => d._id === dayId);
+                        if (!currentDay) {
+                            toast.error("Day not found");
+                            navigate(`/challenges/${id}`);
+                            return;
+                        }
+                        setDayData(currentDay);
+                        setIsCompleted(false);
+                    }
+                } else {
+                    toast.error("Failed to load");
+                }
             } finally {
                 setLoading(false);
             }
@@ -60,13 +83,21 @@ const ChallengeDay = () => {
         e.preventDefault();
         setSubmitting(true);
         try {
+            if (dayId && dayId.startsWith("mock-")) {
+                setTimeout(() => {
+                    setIsCompleted(true);
+                    toast.success(`Day ${dayData.dayNumber} completed! +${dayData.points} points. 🏆`);
+                    setSubmitting(false);
+                }, 500);
+                return;
+            }
             await submitChallengeDay(id, dayId, submissionText);
             setIsCompleted(true);
             toast.success(`Day ${dayData.dayNumber} completed! +${dayData.points} points. 🏆`);
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to submit");
         } finally {
-            setSubmitting(false);
+            if (!dayId || !dayId.startsWith("mock-")) setSubmitting(false);
         }
     };
 

@@ -5,6 +5,7 @@ import { useEffect, useState, useContext } from "react";
 import { getChallengeById, getChallengeProgress, joinChallenge } from "../services/api";
 import AuthContext from "../context/AuthContext";
 import { toast } from "react-toastify";
+import { FORMATION_CHALLENGES } from "../data";
 
 const ChallengeDetails = () => {
     const { id } = useParams();
@@ -29,8 +30,22 @@ const ChallengeDetails = () => {
                     setProgress(progRes.data);
                 }
             } catch (error) {
-                console.error(error);
-                toast.error("Failed to load challenge");
+                console.error("Failed to load challenge from API. Falling back to static data.");
+                const staticChallenge = FORMATION_CHALLENGES.find(c => c.id.toString() === id || c._id === id);
+                if (staticChallenge) {
+                    setChallenge(staticChallenge);
+                    // Mock days from modules if available
+                    if (staticChallenge.modules) {
+                        const mockDays = staticChallenge.modules.map((mod, index) => ({
+                            _id: `mock-${index}`,
+                            dayNumber: index + 1,
+                            content: { theme: mod.title, reading: mod.description }
+                        }));
+                        setDays(mockDays);
+                    }
+                } else {
+                    toast.error("Failed to load challenge");
+                }
             } finally {
                 setLoading(false);
             }
@@ -164,7 +179,7 @@ const ChallengeDetails = () => {
                                             <div className={`w-12 h-12 shrink-0 rounded-full flex items-center justify-center font-bold text-lg border-4 ${
                                                 isCompleted 
                                                     ? "bg-green-50 border-green-200 text-green-600" 
-                                                    : isLocked ? "bg-gray-100 border-white text-gray-400" : "bg-rubrik-navy/5 border-white text-rubrik-navy"
+                                                    : isLocked ? "bg-stone-50 border-stone-100 text-stone-400" : "bg-rubrik-navy/5 border-white text-rubrik-navy"
                                                 }`}>
                                                 {isCompleted ? <CheckCircle size={20} /> : day.dayNumber}
                                             </div>

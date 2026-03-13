@@ -4,7 +4,7 @@ import Checkout from "../Checkout";
 import Navbar from "../components/Navbar";
 import CartSidebar from "../components/CartSidebar";
 import { ProductCard, BlogCard, SectionHeader } from "../Components";
-import { NEW_ARRIVALS, BLOG_POSTS } from "../data";
+import { NEW_ARRIVALS, BLOG_POSTS, FORMATION_CHALLENGES } from "../data";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import { useContext, useEffect } from "react";
@@ -30,7 +30,18 @@ const Home = () => {
     const [wishlistChallenges, setWishlistChallenges] = useState(new Set());
 
     useEffect(() => {
-        getChallenges().then(res => setChallenges(res.data)).catch(console.error);
+        getChallenges()
+            .then(res => {
+                if (res.data && res.data.length > 0) {
+                    setChallenges(res.data);
+                } else {
+                    setChallenges(FORMATION_CHALLENGES);
+                }
+            })
+            .catch((err) => {
+                console.error("Failed to fetch challenges from API, falling back to static data:", err);
+                setChallenges(FORMATION_CHALLENGES);
+            });
         if (user) {
             getWishlist().then(res => {
                 setWishlistProducts(new Set(res.data.products.map(p => p._id || p)));
@@ -236,16 +247,19 @@ const Home = () => {
                 <section className="py-24 container mx-auto px-6" id="challenges">
                     <SectionHeader title="Formation Challenges" link="/challenges" />
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        {challenges.map((item) => (
-                            <div key={item._id} onClick={() => navigate(`/challenges/${item._id}`)} className="cursor-pointer">
-                                <ProductCard 
-                                    item={item} 
-                                    showPrice={false}
-                                    isWishlisted={wishlistChallenges.has(item._id)}
-                                    onWishlistClick={handleWishlistChallenge}
-                                />
-                            </div>
-                        ))}
+                        {challenges.map((item) => {
+                            const itemId = item._id || item.id;
+                            return (
+                                <div key={itemId} onClick={() => navigate(`/challenges/${itemId}`)} className="cursor-pointer">
+                                    <ProductCard 
+                                        item={item} 
+                                        showPrice={false}
+                                        isWishlisted={wishlistChallenges.has(itemId)}
+                                        onWishlistClick={handleWishlistChallenge}
+                                    />
+                                </div>
+                            );
+                        })}
                     </div>
                 </section>
 
