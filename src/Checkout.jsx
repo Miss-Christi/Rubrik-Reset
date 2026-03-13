@@ -10,7 +10,8 @@ export default function Checkout({ onBack, onOrderSuccess }) {
 
   // UPI Configuration (Replace with real ID)
   const upiID = "rubrikreset@upi"; 
-  const upiLink = `upi://pay?pa=${upiID}&pn=RubrikReset&am=${totalPrice}&cu=INR`;
+  const returnUrl = encodeURIComponent(window.location.href);
+  const upiLink = `upi://pay?pa=${upiID}&pn=RubrikReset&am=${totalPrice}&cu=INR&url=${returnUrl}`;
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -120,18 +121,17 @@ export default function Checkout({ onBack, onOrderSuccess }) {
 
                 {/* QR Code Container */}
                 <div className="bg-white p-6 rounded-xl border-2 border-dashed border-rubrik-red inline-block mb-8 relative">
-                    <div className="w-48 h-48 bg-gray-50 flex flex-col items-center justify-center rounded-lg overflow-hidden">
-                        {/* Placeholder for QR Code */}
+                    <a href={upiLink} rel="noopener noreferrer" className="w-48 h-48 bg-gray-50 flex flex-col items-center justify-center rounded-lg overflow-hidden block hover:opacity-80 transition-opacity">
                         <img 
-                          src="https://placehold.co/200x200/png?text=QR+Code+Placeholder" 
-                          alt="UPI QR Code Placeholder" 
+                          src="/Rubrik_QR.jpeg" 
+                          alt="UPI QR Code" 
                           className="w-full h-full object-cover"
                         />
-                    </div>
+                    </a>
                 </div>
 
                 <div className="flex flex-col gap-4">
-                  <a href={upiLink} target="_blank" rel="noopener noreferrer" className="bg-rubrik-navy/5 text-rubrik-navy font-bold py-3 rounded-xl border border-rubrik-navy/20 hover:bg-rubrik-navy hover:text-white transition-all">
+                  <a href={upiLink} rel="noopener noreferrer" className="bg-rubrik-navy/5 text-rubrik-navy font-bold py-3 rounded-xl border border-rubrik-navy/20 hover:bg-rubrik-navy hover:text-white transition-all">
                     Pay / Direct Link
                   </a>
 

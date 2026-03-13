@@ -31,14 +31,12 @@ const userSchema = new mongoose.Schema(
         }],
         wishlistedProducts: [
             {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Product",
+                type: String,
             }
         ],
         wishlistedChallenges: [
             {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Challenge",
+                type: String,
             }
         ],
     },

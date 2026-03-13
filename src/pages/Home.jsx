@@ -25,7 +25,7 @@ const Home = () => {
     const [selectedProduct, setSelectedProduct] = useState(null);
 
     const { user } = useContext(AuthContext);
-    const [challenges, setChallenges] = useState([]);
+    const [challenges, setChallenges] = useState(FORMATION_CHALLENGES);
     const [wishlistProducts, setWishlistProducts] = useState(new Set());
     const [wishlistChallenges, setWishlistChallenges] = useState(new Set());
 
@@ -170,8 +170,8 @@ const Home = () => {
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 md:gap-8">
                         {NEW_ARRIVALS.map((item) => (
                             <div key={item.id} onClick={() => setSelectedProduct(item)} className="cursor-pointer">
-                                <ProductCard 
-                                    item={item} 
+                                <ProductCard
+                                    item={item}
                                     isWishlisted={wishlistProducts.has(item.id)}
                                     onWishlistClick={handleWishlistProduct}
                                 />
@@ -251,8 +251,8 @@ const Home = () => {
                             const itemId = item._id || item.id;
                             return (
                                 <div key={itemId} onClick={() => navigate(`/challenges/${itemId}`)} className="cursor-pointer">
-                                    <ProductCard 
-                                        item={item} 
+                                    <ProductCard
+                                        item={item}
                                         showPrice={false}
                                         isWishlisted={wishlistChallenges.has(itemId)}
                                         onWishlistClick={handleWishlistChallenge}
@@ -532,10 +532,10 @@ const Home = () => {
                             {selectedProduct.isBooking && (
                                 <div className="mb-6">
                                     <label className="block text-sm font-bold text-rubrik-navy mb-2">Select a Date & Time:</label>
-                                    <input 
-                                        type="datetime-local" 
+                                    <input
+                                        type="datetime-local"
                                         className="w-full p-3 rounded-xl bg-stone-50 border border-stone-200 text-rubrik-navy outline-none focus:border-rubrik-red transition-all"
-                                        onChange={(e) => setSelectedProduct({...selectedProduct, selectedDate: e.target.value})}
+                                        onChange={(e) => setSelectedProduct({ ...selectedProduct, selectedDate: e.target.value })}
                                     />
                                 </div>
                             )}

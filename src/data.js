@@ -8,7 +8,7 @@ export const NEW_ARRIVALS = [
     category: "Lenten Journal",
     description: "A beautifully structured bullet journal to help you track your spiritual growth, goals, and daily reflections throughout the Lenten season.",
     // Image: Crown of thorns / Purple fabric
-    image: "/1.jpg"
+    image: "/products/Growth_Compass_1.jpeg"
   },
   {
     id: 2,
@@ -18,7 +18,7 @@ export const NEW_ARRIVALS = [
     category: "Book",
     description: "A powerful tool to visually map out your prayers, aspirations, and stepping stones building towards a disciplined life of faith.",
     // Image: Statue of Mary / Blue Aesthetic
-    image: "https://images.unsplash.com/photo-1605353132645-0d33e69eb858?q=80&w=800&auto=format&fit=crop"
+    image: "/products/Vision_Board.jpeg"
   },
   {
     id: 3,
@@ -28,7 +28,7 @@ export const NEW_ARRIVALS = [
     category: "Adoration Journal",
     description: "Designed specifically for adoration, this journal provides guided prompts to help you memorize scripture and meditate on the Word.",
     // Image: Monstrance / Candlelight
-    image: "/4.jpg"
+    image: "/products/Word_In-Me_Journal.jpeg"
   },
   {
     id: 4,
@@ -38,7 +38,7 @@ export const NEW_ARRIVALS = [
     category: "Stationery",
     description: "A minimalistic A3 weekly planner to help you organize your schedule, integrating your faith commitments with daily practicalities.",
     // Image: Aesthetic handwritten letters
-    image: "/2.jpg"
+    image: "/products/A3_Weekly_Planner_2.jpeg"
   },
   {
     id: 5,
@@ -48,38 +48,12 @@ export const NEW_ARRIVALS = [
     category: "Gift Kit",
     description: "A comprehensive bundle of printable sheets designed to complement your Growth Compass journal with additional layouts and trackers.",
     // Image: Rustic table with bible and coffee
-    image: "/5.jpg"
-  },
-  {
-    id: 6,
-    title: "Community Tee",
-    price: "600",
-    rating: 5,
-    category: "Apparel",
-    description: "A premium, comfortable t-shirt featuring our community logo, perfect for everyday wear and sparking conversations about faith.",
-    // Image: Navy blue texture
-    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=800&auto=format&fit=crop"
+    image: "/products/Rubrik_Free_Resources.jpeg"
   }
 ];
 
 // --- FORMATION CHALLENGES (Digital) ---
 export const FORMATION_CHALLENGES = [
-  {
-    id: 101,
-    title: "Little Steps Community",
-    rating: 5,
-    category: "Membership",
-    duration: "Ongoing",
-    description: "Join a vibrant, supportive community focused on taking small, intentional steps together towards holistic spiritual and personal growth.",
-    modules: [
-      { title: "Introduction to Little Steps", description: "Understanding the philosophy behind incremental growth.", locked: false },
-      { title: "Building Daily Habits", description: "Practical exercises to anchor your day in prayer.", locked: false },
-      { title: "Community Check-in", description: "A group reflection and sharing session.", locked: true },
-      { title: "Embracing Silence", description: "Finding quiet moments in a noisy world.", locked: true }
-    ],
-    // Image: Diverse group of young people
-    image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop"
-  },
   {
     id: 102,
     title: "100-Day YouCat Challenge",
@@ -110,7 +84,7 @@ export const FORMATION_CHALLENGES = [
       { title: "Week 4: Preparation", description: "Preparing the heart for the Resurrection.", locked: true }
     ],
     // Image: Rosary beads
-    image: "https://images.unsplash.com/photo-1505506927361-b84175396652?q=80&w=800&auto=format&fit=crop"
+    image: "/Formation_Challenges/Lent Challenge.jpg"
   },
   {
     id: 104,
@@ -126,7 +100,7 @@ export const FORMATION_CHALLENGES = [
       { title: "Consecration Day", description: "The final prayer of consecration.", locked: true }
     ],
     // Image: Plant/Nature
-    image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop"
+    image: "/Formation_Challenges/St_Joseph_Novena.jpg"
   },
   {
     id: 105,
@@ -135,9 +109,9 @@ export const FORMATION_CHALLENGES = [
     category: "Workshop",
     duration: "Half Day",
     description: "Understand the YOUCAT DNA principles, charism, and get hands-on experience with YOUCAT tools. Build new tools and see best practices.",
-    price: "0", 
+    price: "0",
     isBooking: false,
-    image: "https://images.unsplash.com/photo-1544531586-fde5298cdd40?q=80&w=800&auto=format&fit=crop"
+    image: "/Formation_Challenges/Train_the_Trainer_Batch_3.png"
   },
   {
     id: 106,
@@ -148,7 +122,7 @@ export const FORMATION_CHALLENGES = [
     description: "Read the YOUCAT + DOCAT + Bible in 2 years. Do mission with the YOUCAT charism in your context and learn to pray with the saints.",
     price: "0",
     isBooking: false,
-    image: "https://images.unsplash.com/photo-1493612276216-ee3925520721?q=80&w=800&auto=format&fit=crop"
+    image: "/Formation_Challenges/YOUCAT_Barefoot_Missionary.png"
   },
   {
     id: 107,
@@ -159,7 +133,7 @@ export const FORMATION_CHALLENGES = [
     description: "Train YOUCAT Creatives to design digital content like posters, reels, blogs, and newsletters aligning to the books and charism of YOUCAT.",
     price: "0",
     isBooking: false,
-    image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=800&auto=format&fit=crop"
+    image: "/Formation_Challenges/YOUCAT_Creatives_ABCD.png"
   },
   {
     id: 108,
@@ -170,7 +144,7 @@ export const FORMATION_CHALLENGES = [
     description: "The best starter course to get you kickstarted with key facts about the YOUCAT charism and how to use the books! Includes simple digital tools.",
     price: "0",
     isBooking: false,
-    image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=800&auto=format&fit=crop"
+    image: "/Formation_Challenges/YouCat_Starter.png"
   },
   {
     id: 109,
@@ -181,7 +155,7 @@ export const FORMATION_CHALLENGES = [
     description: "Learn worship leading, song selection, charisms in worship, liturgical and personal worship throughout 15 online sessions.",
     price: "0",
     isBooking: false,
-    image: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=800&auto=format&fit=crop"
+    image: "/Formation_Challenges/Worship_Rubrics_Workshop.png"
   },
   {
     id: 110,
@@ -192,7 +166,7 @@ export const FORMATION_CHALLENGES = [
     description: "6 month mentoring framework with materials shared on Whatsapp and one-to-one mentoring by a Chartered Accountant to make a personal investment plan.",
     price: "0",
     isBooking: false,
-    image: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=800&auto=format&fit=crop"
+    image: "/Formation_Challenges/DOCAT How to manage your money.png"
   },
   {
     id: 111,
@@ -203,7 +177,7 @@ export const FORMATION_CHALLENGES = [
     price: "506",
     description: "Resources to run YOUCAT for one year in a parish or youth group setting. Includes monthly zoom training for leaders.",
     isBooking: false,
-    image: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=800&auto=format&fit=crop"
+    image: "/Formation_Challenges/YOUCAT_Parish_group_Program_Kit.png"
   },
   {
     id: 112,
@@ -214,7 +188,7 @@ export const FORMATION_CHALLENGES = [
     description: "Do you need a life reset? Pray the precious blood prayer on each bead of the rosary to receive tangible grace. 31 checkpoints.",
     price: "0",
     isBooking: false,
-    image: "https://images.unsplash.com/photo-1505506927361-b84175396652?q=80&w=800&auto=format&fit=crop"
+    image: "/Formation_Challenges/The_Precious_Blood_prayer_challenge.png"
   },
   {
     id: 113,
@@ -225,7 +199,7 @@ export const FORMATION_CHALLENGES = [
     description: "Do you feel stagnant? Pray the words 'Most precious blood of Jesus Christ, save us and the whole world' for 31 checkpoints.",
     price: "0",
     isBooking: false,
-    image: "https://images.unsplash.com/photo-1605353132645-0d33e69eb858?q=80&w=800&auto=format&fit=crop"
+    image: "/Formation_Challenges/The_Precious_Blood_prayer_challenge.png"
   },
   {
     id: 114,
@@ -236,7 +210,7 @@ export const FORMATION_CHALLENGES = [
     price: "51",
     description: "Learn why it is important to start saving early, the Catholic way to handle money, and clarify doubts with your personal income. (Select a date slot when checking out).",
     isBooking: true,
-    image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=800&auto=format&fit=crop"
+    image: "/Formation_Challenges/DOCAT_Financial_Planning.png"
   }
 ];
 
@@ -249,7 +223,7 @@ export const BLOG_POSTS = [
     content: "<h2>The Illusion of Progress</h2><p>In a world obsessed with 'what's next', there is a profound counter-cultural peace in asking 'what's always been'. We often confuse movement with progress.</p><h2>Revisiting the Core</h2><p>When we talk about a 'reset', we aren't talking about going backward. We are talking about clearing the cache. Stripping away the excess to find the solid rock beneath. The core values of faith, community, and stewardship are not outdated; they are the bedrock upon which any sustainable future is built.</p><blockquote>\"You cannot build a skyscraper on a cracked foundation.\"</blockquote><p>Take time this week to assess your spiritual foundation. Are the basics in place? Daily prayer, regular sacraments, and genuine community?</p>",
     date: "Jan 10, 2026",
     category: "Reflection",
-    image: "https://images.unsplash.com/photo-1499750310159-5b5f0969206e?q=80&w=800&auto=format&fit=crop"
+    image: "/Revisiting_the_Basics.jpg"
   },
   {
     id: 2,
