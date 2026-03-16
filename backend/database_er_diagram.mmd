@@ -1,0 +1,99 @@
+erDiagram
+    %% Entities
+    USER {
+        ObjectId _id PK
+        String name
+        String email
+        String password
+        String googleId "Sparse"
+        String resetPasswordToken
+        Date resetPasswordExpire
+        String image
+        String role "Enum: user, admin"
+        String phone
+        ObjectId[] wishlist "References Product"
+        String[] wishlistedProducts
+        String[] wishlistedChallenges
+        Date createdAt
+        Date updatedAt
+    }
+
+    CHALLENGE {
+        ObjectId _id PK
+        String title
+        String description
+        String category
+        String duration
+        String image
+        Date startDate
+        Date endDate
+    }
+
+    CHALLENGE_DAY {
+        ObjectId _id PK
+        ObjectId challenge FK
+        Number dayNumber
+        Date date
+        Number points
+        String reading
+        String theme
+        String reflection
+        String task
+        String youcat
+        Boolean isFinalDay
+    }
+
+    USER_CHALLENGE {
+        ObjectId _id PK
+        ObjectId user FK
+        ObjectId challenge FK
+        String status "Enum: active, completed, dropped"
+        Number totalPoints
+        Number completedDays
+    }
+
+    USER_CHALLENGE_DAY {
+        ObjectId _id PK
+        ObjectId user FK
+        ObjectId challengeDay FK
+        String status "Enum: completed, missed"
+        String submissionText
+        Number pointsEarned
+    }
+
+    PRODUCT {
+        ObjectId _id PK
+        String title
+        String fileUrl
+        Number price
+        String category
+        Number days
+    }
+
+    PURCHASE {
+        ObjectId _id PK
+        ObjectId userId FK
+        ObjectId productId FK
+        Number downloadCount
+        Number maxDownloadLimit
+        Date expiryDate
+        Date purchaseDate
+    }
+
+    MESSAGE {
+        ObjectId _id PK
+        String name
+        String email
+        String message
+        Boolean newsletter
+    }
+
+    %% Relationships
+    USER ||--o{ USER_CHALLENGE : "participates in"
+    CHALLENGE ||--o{ USER_CHALLENGE : "has participants"
+    CHALLENGE ||--|{ CHALLENGE_DAY : "contains"
+    USER ||--o{ USER_CHALLENGE_DAY : "completes"
+    CHALLENGE_DAY ||--o{ USER_CHALLENGE_DAY : "completed by"
+    USER ||--o{ PURCHASE : "makes"
+    PRODUCT ||--o{ PURCHASE : "is bought in"
+    USER }|--o{ PRODUCT : "has in wishlist"

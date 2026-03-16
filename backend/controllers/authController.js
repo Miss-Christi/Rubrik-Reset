@@ -75,6 +75,13 @@ const loginUser = asyncHandler(async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
+        // Auto-promote if this is the designated admin email
+        const adminEmail = process.env.ADMIN_EMAIL;
+        if (adminEmail && user.email.toLowerCase() === adminEmail.toLowerCase() && user.role !== 'admin') {
+            user.role = 'admin';
+            await user.save();
+        }
+
         res.json({
             _id: user.id,
             name: user.name,
@@ -177,7 +184,8 @@ const forgotPassword = asyncHandler(async (req, res) => {
     await user.save();
 
     // Create reset url
-    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
 
     // HTML Message
     const message = `

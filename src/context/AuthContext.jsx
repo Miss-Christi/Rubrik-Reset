@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import { login as apiLogin, register as apiRegister } from "../services/api";
+import { login as apiLogin, register as apiRegister, API_BASE_URL } from "../services/api";
 
 const AuthContext = createContext();
 
@@ -58,7 +58,9 @@ export const AuthProvider = ({ children }) => {
             try {
                 // Dynamically import axios so we don't crash if not at top level
                 const axios = (await import("axios")).default;
-                await axios.get('http://localhost:5000/auth/logout', { withCredentials: true });
+                // Strip "/api" from the end of the API_BASE_URL to hit the root auth routes
+                const baseUrl = API_BASE_URL.replace('/api', '');
+                await axios.get(`${baseUrl}/auth/logout`, { withCredentials: true });
             } catch (e) { console.log('Backend logout skipped'); }
 
             // 4. Redirect to homepage

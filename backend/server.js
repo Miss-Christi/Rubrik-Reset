@@ -1,19 +1,19 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import passport from "passport"; // Added
-import session from "express-session"; // Added
+import passport from "passport";
+import session from "express-session";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import downloadRoutes from "./routes/downloadRoutes.js";
-import googleAuthRoutes from "./routes/auth.js"; // Added (Assuming your new file is routes/auth.js)
-import userRoutes from "./routes/userRoutes.js"; // Added
+import googleAuthRoutes from "./routes/auth.js";
+import userRoutes from "./routes/userRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import challengeRoutes from "./routes/challengeRoutes.js";
 import wishlistRoutes from "./routes/wishlistRoutes.js";
 import User from "./models/User.js";
-import passportConfig from "./config/passport.js"; // Added
+import passportConfig from "./config/passport.js";
 
 dotenv.config();
 
@@ -24,20 +24,41 @@ const app = express();
 // Initialize Passport Config
 passportConfig(passport);
 
-// Updated CORS configuration for credentials and specific origin
+// --- FIX 1: SECURE CORS CONFIGURATION ---
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5175",
+  "http://127.0.0.1:5173",
+  process.env.FRONTEND_URL // This will be your Vercel URL
+];
+
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5175", "http://127.0.0.1:5173"], // Your React/Vite port
-  credentials: true                // THIS IS MANDATORY FOR COOKIES
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      return callback(new Error('CORS policy violation'), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true // MANDATORY FOR COOKIES/SESSIONS
 }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Session Middleware (Required for Google OAuth)
+// --- FIX 2: PRODUCTION-READY SESSION MIDDLEWARE ---
 app.use(session({
   secret: process.env.JWT_SECRET,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: {
+    // secure: true is required for HTTPS on Render
+    secure: process.env.NODE_ENV === "production",
+    // sameSite: "none" allows cross-site cookies between Vercel and Render
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
 }));
 
 // Passport Middleware
@@ -47,9 +68,9 @@ app.use(passport.session());
 // Routes
 app.use("/api", authRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/user", userRoutes); // Added
+app.use("/api/user", userRoutes);
 app.use("/api/downloads", downloadRoutes);
-app.use("/auth", googleAuthRoutes); // Added for Google Auth
+app.use("/auth", googleAuthRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/challenges", challengeRoutes);
 app.use("/api/wishlist", wishlistRoutes);
@@ -66,7 +87,7 @@ const createAdminUser = async () => {
       await User.create({
         name: "Admin User",
         email: "admin@test.com",
-        password: "admin123", // Will be hashed by pre-save hook
+        password: "admin123",
         role: "admin",
       });
       console.log("✓ Admin user created: admin@test.com / admin123");

@@ -8,7 +8,7 @@ import { NEW_ARRIVALS, BLOG_POSTS, FORMATION_CHALLENGES } from "../data";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import { useContext, useEffect } from "react";
-import { getChallenges, getWishlist, toggleProductWishlist, toggleChallengeWishlist } from "../services/api";
+import { getChallenges, getWishlist, toggleProductWishlist, toggleChallengeWishlist, API_BASE_URL } from "../services/api";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -93,7 +93,7 @@ const Home = () => {
 
         try {
             setIsSubmitting(true);
-            const response = await axios.post('http://localhost:5000/api/messages', formData);
+            const response = await axios.post(`${API_BASE_URL}/messages`, formData);
             if (response.status === 201) {
                 toast.success("Message sent successfully!");
                 setFormData({ name: "", email: "", message: "", newsletter: false });

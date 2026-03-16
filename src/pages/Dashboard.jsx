@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AuthContext from "../context/AuthContext";
 import { useCart } from "../CartContext";
+import { API_BASE_URL } from '../services/api';
 import API from "../api/axios";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 
@@ -35,7 +36,9 @@ const Dashboard = () => {
     useEffect(() => {
         const verifySession = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/auth/current_user', { withCredentials: true });
+                // Strip "/api" to hit the root auth routes
+                const baseUrl = API_BASE_URL.replace('/api', '');
+                const res = await axios.get(`${baseUrl}/auth/current_user`, { withCredentials: true });
                 if (res.data) {
                     setUser(res.data);
                     setName(res.data.name);
@@ -77,7 +80,7 @@ const Dashboard = () => {
     const handleDownload = async (purchaseId) => {
         try {
             await API.get(`/downloads/check/${purchaseId}`);
-            window.open(`http://localhost:5000/api/downloads/secure-download/${purchaseId}`, "_blank");
+            window.open(`${API_BASE_URL}/downloads/secure-download/${purchaseId}`, "_blank");
             setTimeout(() => {
                 API.get("/user/downloads").then(res => setDownloads(res.data));
             }, 2000);

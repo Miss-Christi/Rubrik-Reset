@@ -2,6 +2,7 @@ import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import AuthContext from "../context/AuthContext";
+import { API_BASE_URL } from "../services/api";
 import { toast } from "react-toastify";
 
 const Login = () => {
@@ -185,7 +186,7 @@ const Login = () => {
                         {/* Google Social Login / Recovery */}
                         <div className="space-y-3">
                             <a
-                                href="http://localhost:5000/auth/google"
+                                href={`${API_BASE_URL.replace('/api', '')}/auth/google`}
                                 className="w-full flex justify-center items-center py-3 px-4 border border-gray-200 rounded-xl bg-white text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm"
                             >
                                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5 mr-3" alt="Google" />
