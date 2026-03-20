@@ -8,13 +8,13 @@ import UserChallenge from "../models/UserChallenge.js";
 // @route   GET /api/user/downloads
 // @access  Private
 const getUserDownloads = asyncHandler(async (req, res) => {
-    // Find all purchases for this user and correctly populate the product details
-    const purchases = await Purchase.find({ userId: req.user._id })
-        .populate("productId")
+    // Find all purchases for this user and correctly populate the item details
+    const purchases = await Purchase.find({ userId: req.user._id, itemType: 'Product' })
+        .populate("itemId")
         .sort({ purchaseDate: -1 });
 
-    // Filter to only products that exist and are NOT challenges
-    const downloads = purchases.filter(p => p.productId && p.productId.category !== "Challenge");
+    // Filter to only items that exist and are NOT challenges (though filtered by itemType already)
+    const downloads = purchases.filter(p => p.itemId);
     res.json(downloads);
 });
 
@@ -52,15 +52,15 @@ const getUserChallenges = asyncHandler(async (req, res) => {
 // @access  Private
 const getUserOrders = asyncHandler(async (req, res) => {
     const purchases = await Purchase.find({ userId: req.user._id })
-        .populate("productId")
+        .populate("itemId")
         .sort({ purchaseDate: -1 });
 
     const orders = purchases.map(p => ({
         _id: p._id,
-        productId: p.productId ? p.productId._id : null,
-        productName: p.productId ? p.productId.title : "Unknown Product",
-        price: p.productId ? p.productId.price : 0,
-        quantity: 1, // Currently fixed at 1 per purchase based on Schema
+        productId: p.itemId ? p.itemId._id : null,
+        productName: p.itemId ? p.itemId.title : "Unknown Item",
+        price: p.itemId ? p.itemId.price : 0,
+        quantity: 1,
         purchaseDate: p.purchaseDate
     }));
 
@@ -71,12 +71,18 @@ const getUserOrders = asyncHandler(async (req, res) => {
 // @route   GET /api/user/wishlist
 // @access  Private
 const getUserWishlist = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id).populate('wishlist');
+    const user = await User.findById(req.user._id)
+        .populate('wishlistedProducts')
+        .populate('wishlistedChallenges');
     if (!user) {
         res.status(404);
         throw new Error("User not found");
     }
-    res.json(user.wishlist || []);
+    const combined = [
+        ...(user.wishlistedProducts || []),
+        ...(user.wishlistedChallenges || [])
+    ];
+    res.json(combined);
 });
 
 // @desc    Toggle product in wishlist
@@ -91,18 +97,94 @@ const toggleWishlist = asyncHandler(async (req, res) => {
         throw new Error("User not found");
     }
 
-    const index = user.wishlist.indexOf(productId);
-    if (index > -1) {
-        user.wishlist.splice(index, 1); // Remove if exists
+    const isProduct = await Product.exists({ _id: productId });
+    
+    if (isProduct) {
+        const index = user.wishlistedProducts.indexOf(productId);
+        if (index > -1) user.wishlistedProducts.splice(index, 1);
+        else user.wishlistedProducts.push(productId);
     } else {
-        user.wishlist.push(productId); // Add if doesn't exist
+        // Check if it's a Challenge
+        const challengeExists = await Challenge.exists({ _id: productId });
+        if (challengeExists) {
+            const index = user.wishlistedChallenges.indexOf(productId);
+            if (index > -1) user.wishlistedChallenges.splice(index, 1);
+            else user.wishlistedChallenges.push(productId);
+        } else {
+            // Clean up if not found in either
+            user.wishlistedProducts = user.wishlistedProducts.filter(id => id.toString() !== productId);
+            user.wishlistedChallenges = user.wishlistedChallenges.filter(id => id.toString() !== productId);
+        }
     }
 
     await user.save();
 
-    // Return the updated populated list
-    const updatedUser = await User.findById(req.user._id).populate('wishlist');
-    res.json(updatedUser.wishlist);
+    // Return the updated populated combined list
+    const updatedUser = await User.findById(req.user._id)
+        .populate('wishlistedProducts')
+        .populate('wishlistedChallenges');
+        
+    const combined = [
+        ...(updatedUser.wishlistedProducts || []),
+        ...(updatedUser.wishlistedChallenges || [])
+    ];
+    res.json(combined);
+});
+
+// @desc    Get user profile
+// @route   GET /api/user/profile
+// @access  Private
+const getUserProfile = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id);
+    if (user) {
+        res.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            state: user.state,
+            city: user.city,
+            landmark: user.landmark,
+            pincode: user.pincode,
+            role: user.role,
+        });
+    } else {
+        res.status(404);
+        throw new Error("User not found");
+    }
+});
+
+// @desc    Update user profile
+// @route   PUT /api/user/profile
+// @access  Private
+const updateUserProfile = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+        user.name = req.body.name || user.name;
+        user.phone = req.body.phone || user.phone;
+        user.state = req.body.state || user.state;
+        user.city = req.body.city || user.city;
+        user.landmark = req.body.landmark || user.landmark;
+        user.pincode = req.body.pincode || user.pincode;
+
+        const updatedUser = await user.save();
+
+        res.json({
+            _id: updatedUser._id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            phone: updatedUser.phone,
+            state: updatedUser.state,
+            city: updatedUser.city,
+            landmark: updatedUser.landmark,
+            pincode: updatedUser.pincode,
+            role: updatedUser.role,
+        });
+    } else {
+        res.status(404);
+        throw new Error("User not found");
+    }
 });
 
 export {
@@ -110,5 +192,7 @@ export {
     getUserChallenges,
     getUserOrders,
     getUserWishlist,
-    toggleWishlist
+    toggleWishlist,
+    getUserProfile,
+    updateUserProfile
 };

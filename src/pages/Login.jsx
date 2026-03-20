@@ -1,20 +1,18 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import AuthContext from "../context/AuthContext";
-import { API_BASE_URL } from "../services/api";
 import { toast } from "react-toastify";
 
+import { API_BASE_URL } from "../services/api";
+
 const Login = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-    const [rememberMe, setRememberMe] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const { login } = useContext(AuthContext);
+    const { login, user } = useContext(AuthContext);
     const navigate = useNavigate();
 
+    // Force redirect if already logged in (requested: "let the user directly in")
     useEffect(() => {
+        if (user) navigate("/");
+
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get("token");
 
@@ -27,194 +25,77 @@ const Login = () => {
                 token: token,
             };
             localStorage.setItem("user", JSON.stringify(googleUser));
-            window.location.href = "/"; // Force full reload so AuthContext picks up the new localStorage token
+            window.location.href = "/";
         }
-    }, []);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
-        try {
-            const user = await login(email, password);
-            toast.success("Login successful!");
-            setTimeout(() => {
-                navigate("/");
-            }, 500);
-        } catch (error) {
-            console.error(error);
-            toast.error(error.response?.data?.message || error.message || "Login failed");
-            setIsLoading(false);
-        }
-    };
+    }, [user, navigate]);
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-200 p-4 relative overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center bg-[#ef3e36] p-4 relative overflow-hidden">
             {/* Background Decorative Elements */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-                <div className="absolute -top-24 -left-24 w-96 h-96 bg-rubrik-red/5 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 -right-24 w-64 h-64 bg-rubrik-blue/5 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-rubrik-navy/5 rounded-full blur-3xl"></div>
+                <div className="absolute -top-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 right-0 w-80 h-80 bg-black/10 rounded-full blur-3xl"></div>
             </div>
 
             <div className="w-full max-w-[420px] z-10 animate-fade-in-up">
                 {/* Brand Header */}
-                <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl shadow-md mb-4 rotate-3 hover:rotate-0 transition-all duration-500">
-                        <img src="/Rubrik_Logo.png" alt="RR" className="w-10 h-10 object-contain" />
+                <div className="text-center mb-10">
+                    <div className="inline-flex items-center justify-center w-24 h-24 bg-white rounded-[2rem] shadow-2xl mb-6 transition-transform hover:scale-105 duration-500">
+                        <img src="/Rubrik_Logo.png" alt="RR" className="w-16 h-16 object-contain" />
                     </div>
-                    <h1 className="text-3xl font-extrabold text-rubrik-navy tracking-tight mb-2">
-                        Rubrik <span className="text-rubrik-red">Reset</span>
+                    <h1 className="text-4xl font-black text-white tracking-tighter mb-2 uppercase">
+                        Rubrik Reset
                     </h1>
-                    <p className="text-rubrik-blue font-medium text-sm tracking-wide uppercase">
+                    <p className="text-white/80 font-bold text-xs tracking-widest uppercase">
                         Reset. Restore. Reimagine.
                     </p>
                 </div>
 
                 {/* Login Card */}
-                <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-                    <div className="p-8">
-                        <h2 className="text-xl font-bold text-gray-800 mb-6 text-center">
-                            Login to your account
+                <div className="bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.2)] overflow-hidden border border-white/20">
+                    <div className="p-10">
+                        <h2 className="text-2xl font-black text-gray-900 mb-2 text-center tracking-tight">
+                            Welcome Back
                         </h2>
+                        <p className="text-center text-gray-500 text-sm font-medium mb-10">
+                            Access your personal formation terminal
+                        </p>
 
-                        <form onSubmit={handleSubmit} className="space-y-5">
-                            {/* Email Field */}
-                            <div className="space-y-1">
-                                <label className="block text-sm font-medium text-gray-700 ml-1">Email Address</label>
-                                <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-rubrik-blue transition-colors">
-                                        <Mail className="h-5 w-5" />
-                                    </div>
-                                    <input
-                                        type="email"
-                                        className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-rubrik-blue/20 focus:border-rubrik-blue transition-all duration-200"
-                                        placeholder="you@example.com"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Password Field */}
-                            <div className="space-y-1">
-                                <label className="block text-sm font-medium text-gray-700 ml-1">Password</label>
-                                <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-rubrik-blue transition-colors">
-                                        <Lock className="h-5 w-5" />
-                                    </div>
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        className="block w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-rubrik-blue/20 focus:border-rubrik-blue transition-all duration-200"
-                                        placeholder="••••••••"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        required
-                                    />
-                                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            className="text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
-                                        >
-                                            {showPassword ? (
-                                                <EyeOff className="h-5 w-5" />
-                                            ) : (
-                                                <Eye className="h-5 w-5" />
-                                            )}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Remember Me & Forgot Password */}
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center">
-                                    <input
-                                        id="remember-me"
-                                        type="checkbox"
-                                        className="h-4 w-4 text-rubrik-red focus:ring-rubrik-red border-gray-300 rounded cursor-pointer"
-                                        checked={rememberMe}
-                                        onChange={(e) => setRememberMe(e.target.checked)}
-                                    />
-                                    <label
-                                        htmlFor="remember-me"
-                                        className="ml-2 block text-sm text-gray-600 cursor-pointer select-none"
-                                    >
-                                        Remember me
-                                    </label>
-                                </div>
-                                <div className="text-sm">
-                                    <Link
-                                        to="/forgot-password"
-                                        className="font-medium text-rubrik-blue hover:text-rubrik-navy transition-colors"
-                                    >
-                                        Forgot password?
-                                    </Link>
-                                </div>
-                            </div>
-
-                            {/* Submit Button */}
-                            <button
-                                type="submit"
-                                disabled={isLoading}
-                                className="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-rubrik-red/20 text-sm font-bold text-white bg-rubrik-red hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rubrik-red disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-300 transform hover:translate-y-[-1px]"
-                            >
-                                {isLoading ? (
-                                    <>
-                                        <Loader2 className="animate-spin -ml-1 mr-2 h-5 w-5" />
-                                        Logging in...
-                                    </>
-                                ) : (
-                                    <>
-                                        Login <ArrowRight className="ml-2 h-4 w-4" />
-                                    </>
-                                )}
-                            </button>
-                        </form>
-
-                        {/* Divider */}
-                        <div className="relative my-6">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-200"></div>
-                            </div>
-                            <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-white text-gray-500 font-medium">Or continue with</span>
-                            </div>
-                        </div>
-
-                        {/* Google Social Login / Recovery */}
-                        <div className="space-y-3">
+                        {/* Google Social Login */}
+                        <div className="space-y-6">
                             <a
-                                href={`${API_BASE_URL.replace('/api', '')}/auth/google`}
-                                className="w-full flex justify-center items-center py-3 px-4 border border-gray-200 rounded-xl bg-white text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm"
+                                href={`${API_BASE_URL.split('/api')[0]}/auth/google`}
+                                className="w-full flex justify-center items-center py-4 px-6 border-2 border-gray-100 rounded-2xl bg-white text-sm font-black text-gray-800 hover:bg-gray-50 hover:border-gray-200 transition-all duration-300 shadow-sm group"
                             >
-                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5 mr-3" alt="Google" />
+                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-6 h-6 mr-4 group-hover:scale-110 transition-transform" alt="Google" />
                                 Sign in with Google
                             </a>
-                            <p className="text-center text-xs text-gray-500 px-4">
-                                Forgot your password? Use Google to instantly verify your identity.
-                            </p>
+
+                            <div className="bg-gray-50 rounded-2xl p-6 text-center">
+                                <p className="text-xs text-gray-400 font-bold uppercase tracking-wider leading-relaxed">
+                                    Secure Authentication Protocol via Google Cloud Identity
+                                </p>
+                            </div>
                         </div>
                     </div>
 
                     {/* Footer of Card */}
-                    <div className="px-8 py-5 bg-gray-50 border-t border-gray-100 text-center">
-                        <p className="text-sm text-gray-600">
-                            Don't have an account?{" "}
+                    <div className="px-10 py-6 bg-gray-50/50 border-t border-gray-100 text-center">
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                            New here?{" "}
                             <Link
                                 to="/register"
-                                className="font-bold text-rubrik-red hover:text-rubrik-navy transition-colors"
+                                className="text-[#ef3e36] hover:underline ml-1"
                             >
-                                Sign up
+                                Create Account
                             </Link>
                         </p>
                     </div>
                 </div>
 
                 {/* Page Footer */}
-                <p className="text-center text-xs text-gray-400 mt-8">
-                    &copy; 2026 Rubrik Reset. All rights reserved.
+                <p className="text-center text-[10px] font-bold text-white/40 mt-10 uppercase tracking-[0.3em]">
+                    &copy; 2026 Rubrik Reset &bull; Digital Ecosystem
                 </p>
             </div>
         </div>

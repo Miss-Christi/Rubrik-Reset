@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useCart } from './CartContext';
 import { ArrowLeft, CheckCircle, QrCode } from 'lucide-react';
+import { API } from './services/api';
 
 export default function Checkout({ onBack, onOrderSuccess }) {
   const { cart, totalPrice, clearCart } = useCart();
@@ -9,7 +10,7 @@ export default function Checkout({ onBack, onOrderSuccess }) {
   const [paymentFile, setPaymentFile] = useState(null);
 
   // UPI Configuration (Replace with real ID)
-  const upiID = "rubrikreset@upi"; 
+  const upiID = "rubrikreset@upi";
   const returnUrl = encodeURIComponent(window.location.href);
   const upiLink = `upi://pay?pa=${upiID}&pn=RubrikReset&am=${totalPrice}&cu=INR&url=${returnUrl}`;
 
@@ -27,11 +28,17 @@ export default function Checkout({ onBack, onOrderSuccess }) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleFinalSubmit = () => {
-    console.log("Order Placed:", { ...formData, cart, total: totalPrice, proof: paymentFile });
-    clearCart();
-    setStep(3);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const handleFinalSubmit = async () => {
+    try {
+      await API.post("/orders/checkout", { cart, formData });
+      console.log("Order Placed:", { ...formData, cart, total: totalPrice, proof: paymentFile });
+      clearCart();
+      setStep(3);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      console.error("Checkout failed:", err);
+      alert("Checkout failed. Please try again.");
+    }
   };
 
   // --- SUCCESS SCREEN ---
@@ -46,7 +53,7 @@ export default function Checkout({ onBack, onOrderSuccess }) {
           <p className="text-gray-600 mb-8 leading-relaxed">
             Thank you, {formData.name}. We have received your order and payment proof. You will receive a confirmation email shortly.
           </p>
-          <button 
+          <button
             onClick={onOrderSuccess}
             className="bg-rubrik-red text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-rubrik-navy transition-all"
           >
@@ -65,7 +72,7 @@ export default function Checkout({ onBack, onOrderSuccess }) {
         </button>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          
+
           {/* LEFT COLUMN: ORDER SUMMARY */}
           <div className="order-2 lg:order-1">
             <h2 className="text-2xl font-serif font-bold text-rubrik-navy mb-6">Order Summary</h2>
@@ -96,7 +103,7 @@ export default function Checkout({ onBack, onOrderSuccess }) {
 
           {/* RIGHT COLUMN: FORMS */}
           <div className="order-1 lg:order-2">
-            
+
             {/* STEP 1: DETAILS FORM */}
             {step === 1 && (
               <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 animate-fade-in-up">
@@ -121,13 +128,13 @@ export default function Checkout({ onBack, onOrderSuccess }) {
 
                 {/* QR Code Container */}
                 <div className="bg-white p-6 rounded-xl border-2 border-dashed border-rubrik-red inline-block mb-8 relative">
-                    <a href={upiLink} rel="noopener noreferrer" className="w-48 h-48 bg-gray-50 flex flex-col items-center justify-center rounded-lg overflow-hidden block hover:opacity-80 transition-opacity">
-                        <img 
-                          src="/Rubrik_QR.jpeg" 
-                          alt="UPI QR Code" 
-                          className="w-full h-full object-cover"
-                        />
-                    </a>
+                  <a href={upiLink} rel="noopener noreferrer" className="w-48 h-48 bg-gray-50 flex flex-col items-center justify-center rounded-lg overflow-hidden block hover:opacity-80 transition-opacity">
+                    <img
+                      src="/Rubrik_QR.jpeg"
+                      alt="UPI QR Code"
+                      className="w-full h-full object-cover"
+                    />
+                  </a>
                 </div>
 
                 <div className="flex flex-col gap-4">
@@ -137,11 +144,11 @@ export default function Checkout({ onBack, onOrderSuccess }) {
 
                   <div className="text-left bg-gray-50 p-6 rounded-xl border border-gray-200 mt-4">
                     <label className="block text-xs font-bold text-gray-500 uppercase mb-3">Upload Payment Screenshot</label>
-                    <input type="file" accept="image/*" onChange={handleFileUpload} className="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-rubrik-red file:text-white hover:file:bg-rubrik-navy cursor-pointer"/>
+                    <input type="file" accept="image/*" onChange={handleFileUpload} className="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-rubrik-red file:text-white hover:file:bg-rubrik-navy cursor-pointer" />
                   </div>
 
-                  <button 
-                    onClick={handleFinalSubmit} 
+                  <button
+                    onClick={handleFinalSubmit}
                     disabled={!paymentFile}
                     className="mt-2 bg-rubrik-red text-white py-4 rounded-xl font-bold hover:bg-black transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >

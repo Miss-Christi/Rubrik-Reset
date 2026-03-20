@@ -12,6 +12,10 @@ import userRoutes from "./routes/userRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import challengeRoutes from "./routes/challengeRoutes.js";
 import wishlistRoutes from "./routes/wishlistRoutes.js";
+import reflectionRoutes from "./routes/reflectionRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import siteContentRoutes from "./routes/siteContentRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
 import User from "./models/User.js";
 import passportConfig from "./config/passport.js";
 
@@ -74,6 +78,10 @@ app.use("/auth", googleAuthRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/challenges", challengeRoutes);
 app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/reflections", reflectionRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/content", siteContentRoutes);
+app.use("/api/products", productRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend running");

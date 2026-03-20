@@ -8,6 +8,8 @@ import {
     updateUserPassword,   // New Controller Function
     forgotPassword,
     resetPassword,
+    updateUserRole,
+    deleteUser,
 } from "../controllers/authController.js";
 import { protect, admin } from "../middleware/authMiddleware.js";
 import Purchase from "../models/Purchase.js"; // Needed for the download check
@@ -21,6 +23,8 @@ router.post("/forgotpassword", forgotPassword);
 router.put("/resetpassword/:resetToken", resetPassword);
 router.get("/me", protect, getMe);
 router.get("/admin/users", protect, admin, getUsers);
+router.put("/admin/users/:id/role", protect, admin, updateUserRole);
+router.delete("/admin/users/:id", protect, admin, deleteUser);
 
 // --- NEW: Profile Management Routes ---
 // Logic: User must be logged in (protect) to update their own info

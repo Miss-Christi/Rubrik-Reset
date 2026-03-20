@@ -4,7 +4,9 @@ import {
     getUserChallenges,
     getUserOrders,
     getUserWishlist,
-    toggleWishlist
+    toggleWishlist,
+    getUserProfile,
+    updateUserProfile
 } from "../controllers/userController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -15,5 +17,7 @@ router.get("/challenges", protect, getUserChallenges);
 router.get("/orders", protect, getUserOrders);
 router.get("/wishlist", protect, getUserWishlist);
 router.post("/wishlist/:productId", protect, toggleWishlist);
+router.get("/profile", protect, getUserProfile);
+router.put("/profile", protect, updateUserProfile);
 
 export default router;

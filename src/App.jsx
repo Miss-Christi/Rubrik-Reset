@@ -16,7 +16,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Wishlist from "./pages/Wishlist";
 import BlogPost from "./pages/BlogPost";
-
+import Legal from "./pages/Legal";
 // Components
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -39,6 +39,7 @@ function App() {
               <Route path="/challenges/:id/days/:dayId" element={<ChallengeDay />} />
               <Route path="/challenges/:id/leaderboard" element={<ChallengeLeaderboard />} />
               <Route path="/blog/:id" element={<BlogPost />} />
+              <Route path="/legal" element={<Legal />} />
 
               {/* User Only Routes (Admins can also view user dashboard) */}
               <Route element={<ProtectedRoute allowedRoles={['user', 'admin']} />}>

@@ -11,11 +11,18 @@ export const AuthProvider = ({ children }) => {
     // Auto-check token on load
     useEffect(() => {
         const checkAuth = () => {
-            const storedUser = JSON.parse(localStorage.getItem("user"));
-            if (storedUser?.token) {
-                setUser(storedUser);
+            try {
+                const storedUser = JSON.parse(localStorage.getItem("user"));
+                if (storedUser?.token) {
+                    setUser(storedUser);
+                }
+            } catch (err) {
+                console.error("Auth check failed:", err);
+                localStorage.removeItem("user");
+            } finally {
+                console.log("AuthCheck finished. Loading set to false.");
+                setLoading(false);
             }
-            setLoading(false);
         };
         checkAuth();
     }, []);
@@ -70,6 +77,12 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const updateUser = (updatedFields) => {
+        const newUser = { ...user, ...updatedFields };
+        localStorage.setItem("user", JSON.stringify(newUser));
+        setUser(newUser);
+    };
+
     return (
         <AuthContext.Provider
             value={{
@@ -79,9 +92,18 @@ export const AuthProvider = ({ children }) => {
                 login: loginUser,
                 register: registerUser,
                 logout,
+                setUser,
+                updateUser,
             }}
         >
-            {!loading && children}
+            {loading ? (
+                <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc' }}>
+                    <div style={{ textAlign: 'center' }}>
+                        <h1 style={{ fontSize: '14px', fontWeight: '900', color: '#ef3e36', letterSpacing: '0.2em' }}>VERIFYING SESSION...</h1>
+                        <p style={{ fontSize: '10px', color: '#64748b', marginTop: '10px', fontWeight: 'bold' }}>RUBRIK RESET DIGITAL TERMINAL</p>
+                    </div>
+                </div>
+            ) : children}
         </AuthContext.Provider>
     );
 };

@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
     User,
@@ -10,28 +10,20 @@ import {
     Loader2,
     CheckCircle,
     XCircle,
-    Circle,
 } from "lucide-react";
 import AuthContext from "../context/AuthContext";
-import { API_BASE_URL } from "../services/api";
 import { toast } from "react-toastify";
 
+import { API_BASE_URL } from "../services/api";
+
 const Register = () => {
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        agreeToTerms: false,
-    });
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [isPasswordFocused, setIsPasswordFocused] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const { register } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
+    // Force redirect if already logged in
     useEffect(() => {
+        if (user) navigate("/");
+
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get("token");
 
@@ -44,336 +36,86 @@ const Register = () => {
                 token: token,
             };
             localStorage.setItem("user", JSON.stringify(googleUser));
-            window.location.href = "/"; // Force full reload so AuthContext picks up the new localStorage token
+            window.location.href = "/";
         }
-    }, []);
-
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: type === "checkbox" ? checked : value,
-        }));
-    };
-
-    const getPasswordRequirements = (password) => {
-        return [
-            { id: 1, text: "At least 8 characters", met: password.length >= 8 },
-            { id: 2, text: "One uppercase letter (A-Z)", met: /[A-Z]/.test(password) },
-            { id: 3, text: "One lowercase letter (a-z)", met: /[a-z]/.test(password) },
-            { id: 4, text: "One number (0-9)", met: /[0-9]/.test(password) },
-            { id: 5, text: "One special character (!@#$%^&*)", met: /[!@#$%^&*]/.test(password) },
-        ];
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (formData.password !== formData.confirmPassword) {
-            toast.error("Passwords do not match!");
-            return;
-        }
-        if (!formData.agreeToTerms) {
-            toast.error("Please agree to the Terms of Service.");
-            return;
-        }
-
-        setIsLoading(true);
-        try {
-            const user = await register(formData.name, formData.email, formData.password);
-            toast.success("Sign up successful!");
-            setTimeout(() => {
-                navigate("/");
-            }, 500);
-        } catch (error) {
-            console.error(error);
-            toast.error(error.response?.data?.message || error.message || "Registration failed");
-            setIsLoading(false);
-        }
-    };
-
-    const requirements = getPasswordRequirements(formData.password);
+    }, [user, navigate]);
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-200 p-4 relative overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center bg-[#ef3e36] p-4 relative overflow-hidden">
             {/* Background Decorative Elements */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-                <div className="absolute -top-24 -left-24 w-96 h-96 bg-rubrik-red/5 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 -right-24 w-64 h-64 bg-rubrik-blue/5 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-rubrik-navy/5 rounded-full blur-3xl"></div>
+                <div className="absolute -top-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 right-0 w-80 h-80 bg-black/10 rounded-full blur-3xl"></div>
             </div>
 
-            <div className="w-full max-w-[500px] z-10 animate-fade-in-up">
+            <div className="w-full max-w-[420px] z-10 animate-fade-in-up">
                 {/* Brand Header */}
-                <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl shadow-md mb-4 rotate-3 hover:rotate-0 transition-all duration-500">
-                        <img
-                            src="/Rubrik_Logo.png"
-                            alt="RR"
-                            className="w-10 h-10 object-contain"
-                        />
+                <div className="text-center mb-10">
+                    <div className="inline-flex items-center justify-center w-24 h-24 bg-white rounded-[2rem] shadow-2xl mb-6 transition-transform hover:scale-105 duration-500">
+                        <img src="/Rubrik_Logo.png" alt="RR" className="w-16 h-16 object-contain" />
                     </div>
-                    <h1 className="text-3xl font-extrabold text-rubrik-navy tracking-tight mb-2 uppercase">
-                        Rubrik <span className="text-rubrik-red">Reset</span>
+                    <h1 className="text-4xl font-black text-white tracking-tighter mb-2 uppercase">
+                        Join Rubrik Reset
                     </h1>
-                    <p className="text-rubrik-blue font-medium text-sm tracking-wide uppercase">
+                    <p className="text-white/80 font-bold text-xs tracking-widest uppercase">
                         Reset. Restore. Reimagine.
                     </p>
                 </div>
 
                 {/* Register Card */}
-                <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 relative">
-                    <div className="p-8">
-                        <h2 className="text-xl font-bold text-gray-800 mb-6 text-center">
-                            Create your account
+                <div className="bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.2)] overflow-hidden border border-white/20">
+                    <div className="p-10">
+                        <h2 className="text-2xl font-black text-gray-900 mb-2 text-center tracking-tight">
+                            Create Account
                         </h2>
+                        <p className="text-center text-gray-500 text-sm font-medium mb-8">
+                            Join our ecosystem of digital restoration
+                        </p>
 
-                        <form onSubmit={handleSubmit} className="space-y-5">
-                            {/* Full Name Field */}
-                            <div className="space-y-1">
-                                <label className="block text-sm font-medium text-gray-700 ml-1">
-                                    Full Name
-                                </label>
-                                <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#1D4ED8] transition-colors">
-                                        <User className="h-5 w-5" />
-                                    </div>
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#1D4ED8]/20 focus:border-[#1D4ED8] transition-all duration-200"
-                                        placeholder="John Doe"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                    {formData.name.length > 2 && (
-                                        <div className="absolute inset-y-0 right-3 flex items-center text-green-500">
-                                            <CheckCircle className="h-4 w-4" />
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Email Field */}
-                            <div className="space-y-1">
-                                <label className="block text-sm font-medium text-gray-700 ml-1">
-                                    Email Address
-                                </label>
-                                <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#1D4ED8] transition-colors">
-                                        <Mail className="h-5 w-5" />
-                                    </div>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#1D4ED8]/20 focus:border-[#1D4ED8] transition-all duration-200"
-                                        placeholder="work@email.com"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                    {formData.email.includes("@") && (
-                                        <div className="absolute inset-y-0 right-3 flex items-center text-green-500">
-                                            <CheckCircle className="h-4 w-4" />
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Password Field */}
-                            <div className="space-y-1 relative">
-                                <label className="block text-sm font-medium text-gray-700 ml-1">
-                                    Password
-                                </label>
-                                <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#1D4ED8] transition-colors">
-                                        <Lock className="h-5 w-5" />
-                                    </div>
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        name="password"
-                                        className="block w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#1D4ED8]/20 focus:border-[#1D4ED8] transition-all duration-200"
-                                        placeholder="Create password"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        onFocus={() => setIsPasswordFocused(true)}
-                                        onBlur={() => setIsPasswordFocused(false)}
-                                        required
-                                        minLength={8}
-                                    />
-                                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            className="text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
-                                        >
-                                            {showPassword ? (
-                                                <EyeOff className="h-5 w-5" />
-                                            ) : (
-                                                <Eye className="h-5 w-5" />
-                                            )}
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* Password Requirements Hint Box */}
-                                <div
-                                    className={`absolute z-20 left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-100 p-4 transition-all duration-200 transform origin-top ${isPasswordFocused
-                                        ? "opacity-100 scale-100 translate-y-0 visible"
-                                        : "opacity-0 scale-95 -translate-y-2 invisible"
-                                        }`}
-                                >
-                                    <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
-                                        Password must include:
-                                    </p>
-                                    <ul className="space-y-1.5">
-                                        {requirements.map((req) => (
-                                            <li
-                                                key={req.id}
-                                                className={`flex items-center text-xs transition-colors duration-200 ${req.met ? "text-green-600 font-medium" : "text-gray-500"
-                                                    }`}
-                                            >
-                                                {req.met ? (
-                                                    <CheckCircle className="h-3.5 w-3.5 mr-2 flex-shrink-0" />
-                                                ) : (
-                                                    <Circle className="h-3.5 w-3.5 mr-2 flex-shrink-0 text-gray-300" />
-                                                )}
-                                                {req.text}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-
-                            {/* Confirm Password Field */}
-                            <div className="space-y-1">
-                                <label className="block text-sm font-medium text-gray-700 ml-1">
-                                    Confirm Password
-                                </label>
-                                <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#1D4ED8] transition-colors">
-                                        <Lock className="h-5 w-5" />
-                                    </div>
-                                    <input
-                                        type={showConfirmPassword ? "text" : "password"}
-                                        name="confirmPassword"
-                                        className={`block w-full pl-10 pr-10 py-3 border rounded-xl leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#1D4ED8]/20 transition-all duration-200 ${formData.confirmPassword &&
-                                            formData.password !== formData.confirmPassword
-                                            ? "border-red-300 focus:border-red-500"
-                                            : "border-gray-200 focus:border-[#1D4ED8]"
-                                            }`}
-                                        placeholder="Confirm password"
-                                        value={formData.confirmPassword}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                            className="text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
-                                        >
-                                            {showConfirmPassword ? (
-                                                <EyeOff className="h-5 w-5" />
-                                            ) : (
-                                                <Eye className="h-5 w-5" />
-                                            )}
-                                        </button>
-                                    </div>
-                                </div>
-                                {formData.confirmPassword &&
-                                    formData.password !== formData.confirmPassword && (
-                                        <p className="text-xs text-red-500 ml-1 mt-1 flex items-center gap-1">
-                                            <XCircle className="h-3 w-3" /> Passwords do not match
-                                        </p>
-                                    )}
-                            </div>
-
-                            {/* Terms Checkbox */}
-                            <div className="flex items-start">
-                                <div className="flex items-center h-5">
-                                    <input
-                                        id="agreeToTerms"
-                                        name="agreeToTerms"
-                                        type="checkbox"
-                                        className="h-4 w-4 text-[#1D4ED8] focus:ring-[#1D4ED8] border-gray-300 rounded cursor-pointer"
-                                        checked={formData.agreeToTerms}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-                                <div className="ml-3 text-sm">
-                                    <label htmlFor="agreeToTerms" className="font-medium text-gray-700">
-                                        I agree to the{" "}
-                                        <a href="#" className="text-[#1D4ED8] hover:underline">
-                                            Terms of Service
-                                        </a>{" "}
-                                        and{" "}
-                                        <a href="#" className="text-[#1D4ED8] hover:underline">
-                                            Privacy Policy
-                                        </a>
-                                    </label>
-                                </div>
-                            </div>
-
-                            {/* Submit Button */}
-                            <button
-                                type="submit"
-                                disabled={isLoading}
-                                className="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-lg shadow-lg shadow-rubrik-red/20 text-sm font-bold text-white bg-[#E63946] hover:bg-[#d32f2f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E63946] disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-300 transform hover:translate-y-[-1px] uppercase tracking-wide"
-                            >
-                                {isLoading ? (
-                                    <>
-                                        <Loader2 className="animate-spin -ml-1 mr-2 h-5 w-5" />
-                                        Creating account...
-                                    </>
-                                ) : (
-                                    <>
-                                        Sign Up <ArrowRight className="ml-2 h-4 w-4" />
-                                    </>
-                                )}
-                            </button>
-                        </form>
-
-                        {/* Divider */}
-                        <div className="relative my-6">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-200"></div>
-                            </div>
-                            <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-white text-gray-500 font-medium">Or continue with</span>
-                            </div>
+                        <div className="text-center mb-6">
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                                By continuing, you agree to our{" "}
+                                <Link to="/legal" className="text-[#ef3e36] hover:underline">
+                                    Terms & Privacy
+                                </Link>
+                            </p>
                         </div>
 
-                        {/* Google Social Login */}
-                        <div className="space-y-3">
+                        {/* Google Social SignUp */}
+                        <div className="space-y-6">
                             <a
-                                href={`${API_BASE_URL.replace('/api', '')}/auth/google`}
-                                className="w-full flex justify-center items-center py-3 px-4 border border-gray-200 rounded-xl bg-white text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm"
+                                href={`${API_BASE_URL.split('/api')[0]}/auth/google`}
+                                className="w-full flex justify-center items-center py-4 px-6 border-2 border-gray-100 rounded-2xl bg-white text-sm font-black text-gray-800 hover:bg-gray-50 hover:border-gray-200 transition-all duration-300 shadow-sm group"
                             >
-                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5 mr-3" alt="Google" />
+                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-6 h-6 mr-4 group-hover:scale-110 transition-transform" alt="Google" />
                                 Sign up with Google
                             </a>
+
+                            <div className="bg-gray-50 rounded-2xl p-6 text-center">
+                                <p className="text-xs text-gray-400 font-bold uppercase tracking-wider leading-relaxed">
+                                    Instant account creation with secure cross-platform synchronization
+                                </p>
+                            </div>
                         </div>
                     </div>
 
                     {/* Footer of Card */}
-                    <div className="px-8 py-5 bg-gray-50 border-t border-gray-100 text-center">
-                        <p className="text-sm text-gray-600">
-                            Already have an account?{" "}
+                    <div className="px-10 py-6 bg-gray-50/50 border-t border-gray-100 text-center">
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                            Already a member?{" "}
                             <Link
                                 to="/login"
-                                className="font-bold text-[#1D4ED8] hover:text-[#1e40af] transition-colors hover:underline"
+                                className="text-[#ef3e36] hover:underline ml-1"
                             >
-                                Sign in
+                                Sign In
                             </Link>
                         </p>
                     </div>
                 </div>
 
                 {/* Page Footer */}
-                <p className="text-center text-xs text-gray-400 mt-8">
-                    &copy; 2026 Rubrik Reset. All rights reserved.
+                <p className="text-center text-[10px] font-bold text-white/40 mt-10 uppercase tracking-[0.3em]">
+                    &copy; 2026 Rubrik Reset &bull; Digital Ecosystem
                 </p>
             </div>
         </div>

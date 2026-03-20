@@ -22,7 +22,9 @@ API.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401) {
             localStorage.removeItem("user");
-            window.location.href = "/login";
+            if (window.location.pathname !== "/login") {
+                window.location.href = "/login";
+            }
         }
         return Promise.reject(error);
     }
@@ -48,4 +50,11 @@ export const getWishlist = () => API.get("/wishlist");
 export const toggleProductWishlist = (id) => API.post(`/wishlist/products/${id}`);
 export const toggleChallengeWishlist = (id) => API.post(`/wishlist/challenges/${id}`);
 
+export const getUserProfile = () => API.get("/user/profile");
+export const updateUserProfile = (data) => API.put("/user/profile", data);
+
+export const getSiteContent = () => API.get("/content");
+export const updateSiteContent = (data) => API.put("/content", data);
+
+export { API };
 export default API;

@@ -3,12 +3,29 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AuthContext from "../context/AuthContext";
 import { useCart } from "../CartContext";
-import { API_BASE_URL } from '../services/api';
-import API from "../api/axios";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { getUserProfile, updateUserProfile, API_BASE_URL } from '../services/api';
+import API from "../api/axios.js";
+import { Loader2, CheckCircle2 } from "lucide-react";
+import { ProductCard, SectionHeader } from "../Components";
+
+const INDIAN_STATES = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
+];
+
+const CITIES_BY_STATE = {
+    "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Nashik", "Aurangabad", "Solapur", "Amravati", "Navi Mumbai", "Kolhapur"],
+    "Karnataka": ["Bengaluru", "Hubballi-Dharwad", "Mysuru", "Kalaburagi", "Mangaluru", "Belagavi", "Davanagere", "Ballari", "Vijayapura", "Shivamogga"],
+    "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tiruppur", "Erode", "Vellore", "Thoothukudi", "Nagercoil"],
+    "Delhi": ["New Delhi", "North Delhi", "South Delhi", "West Delhi", "East Delhi"],
+    "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Junagadh", "Gandhinagar", "Nadiad", "Morbi"],
+    "Uttar Pradesh": ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Meerut", "Varanasi", "Prayagraj", "Bareilly", "Aligarh", "Moradabad"],
+    "West Bengal": ["Kolkata", "Howrah", "Durgapur", "Asansol", "Siliguri", "Maheshtala", "Rajpur Sonarpur", "Gopalpur", "Bhatpara", "Panihati"],
+    "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Khammam", "Karimnagar", "Ramagundam", "Mahbubnagar", "Nalgonda", "Adilabad", "Suryapet"],
+    "Rajasthan": ["Jaipur", "Jodhpur", "Kota", "Bikaner", "Ajmer", "Udaipur", "Bhilwara", "Alwar", "Bharatpur", "Sikar"],
+};
 
 const Dashboard = () => {
-    const { user, logout, setUser } = useContext(AuthContext);
+    const { user, logout, setUser, updateUser } = useContext(AuthContext);
     const { addToCart } = useCart(); // Pull cart actions
     const navigate = useNavigate();
 
@@ -23,36 +40,40 @@ const Dashboard = () => {
     const [wishlist, setWishlist] = useState([]);
 
     // Profile States
-    const [name, setName] = useState(user?.name || "");
-    const [phone, setPhone] = useState(user?.phone || "");
-    const [passwords, setPasswords] = useState({ current: "", next: "" });
-    const [showPasswords, setShowPasswords] = useState(false);
+    const [name, setName] = useState("");
+    const [phone, setPhone] = useState("");
+    const [userState, setUserState] = useState("");
+    const [city, setCity] = useState("");
+    const [landmark, setLandmark] = useState("");
+    const [pincode, setPincode] = useState("");
 
     // Flow states
     const [loading, setLoading] = useState(false);
     const [isVerifying, setIsVerifying] = useState(true);
 
-    // 1. INITIAL SESSION CHECK
+    // 1. INITIAL SESSION & PROFILE FETCH
     useEffect(() => {
-        const verifySession = async () => {
+        const fetchProfile = async () => {
             try {
-                // Strip "/api" to hit the root auth routes
-                const baseUrl = API_BASE_URL.replace('/api', '');
-                const res = await axios.get(`${baseUrl}/auth/current_user`, { withCredentials: true });
-                if (res.data) {
-                    setUser(res.data);
-                    setName(res.data.name);
-                    setPhone(res.data.phone || "");
-                }
+                const { data } = await getUserProfile();
+                setName(data.name || "");
+                setPhone(data.phone || "");
+                setUserState(data.state || "");
+                setCity(data.city || "");
+                setLandmark(data.landmark || "");
+                setPincode(data.pincode || "");
+                
+                // Also sync with AuthContext for display name
+                updateUser(data);
             } catch (err) {
-                console.log("No active session found, checking context user...");
+                console.error("Failed to load profile", err);
                 if (!user) navigate("/login");
             } finally {
                 setIsVerifying(false);
             }
         };
-        verifySession();
-    }, [setUser, navigate, user]);
+        fetchProfile();
+    }, [navigate, user]);
 
     // 2. FETCH DASHBOARD DATA
     useEffect(() => {
@@ -93,29 +114,18 @@ const Dashboard = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const { data } = await API.put("/profile/update", { name, phone });
-            setUser({ ...user, name: data.name, phone: data.phone });
+            const { data } = await updateUserProfile({
+                name,
+                phone,
+                state: userState,
+                city,
+                landmark,
+                pincode
+            });
+            updateUser(data);
             alert("✓ Profile updated successfully!");
         } catch (err) {
             alert(err.response?.data?.message || "Failed to update profile");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleChangePassword = async (e) => {
-        e.preventDefault();
-        if (!passwords.current || !passwords.next) return alert("Please fill both fields");
-        setLoading(true);
-        try {
-            await API.put("/profile/password", {
-                currentPassword: passwords.current,
-                newPassword: passwords.next
-            });
-            alert("🔒 Password changed successfully!");
-            setPasswords({ current: "", next: "" });
-        } catch (err) {
-            alert(err.response?.data?.message || "Invalid current password");
         } finally {
             setLoading(false);
         }
@@ -293,52 +303,104 @@ const Dashboard = () => {
                     {/* PROFILE SETTINGS */}
                     {activeTab === "settings" && (
                         <div className="animate-in fade-in duration-500 space-y-12 max-w-2xl">
-
                             <section>
-                                <h3 className={`text-lg font-black ${textPrimary} uppercase tracking-tighter mb-6`}>Profile Management</h3>
-                                <form onSubmit={handleUpdateProfile} className="space-y-6">
-                                    <div>
-                                        <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Display Name</label>
-                                        <input type="text" value={name} onChange={(e) => setName(e.target.value)} className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${borderSecondary} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} />
+                                <div className="flex items-center gap-4 mb-8">
+                                    <div className="h-12 w-12 bg-[#ef3e36]/10 rounded-2xl flex items-center justify-center">
+                                        <CheckCircle2 className="text-[#ef3e36] w-6 h-6" />
                                     </div>
                                     <div>
-                                        <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Email Address (Static)</label>
-                                        <input type="email" defaultValue={user?.email} disabled className={`w-full ${isDark ? "bg-slate-900 text-slate-500 border-slate-800" : "bg-slate-100 text-slate-400 border-slate-200"} border rounded-2xl p-4 text-sm font-bold cursor-not-allowed shadow-sm`} />
+                                        <h3 className={`text-xl font-black ${textPrimary} uppercase tracking-tighter`}>Account Identity</h3>
+                                        <p className={`text-xs ${textSecondary} font-bold uppercase tracking-widest`}>Manage your personal ecosystem data</p>
                                     </div>
-                                    <div>
-                                        <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Phone Number (Optional)</label>
-                                        <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(+91) 98765 43210" className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${borderSecondary} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} />
+                                </div>
+
+                                <form onSubmit={handleUpdateProfile} className="space-y-8">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Display Name</label>
+                                            <input type="text" value={name} onChange={(e) => setName(e.target.value)} className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${borderSecondary} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} />
+                                        </div>
+                                        <div>
+                                            <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Phone Number</label>
+                                            <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 00000 00000" className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${borderSecondary} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} />
+                                        </div>
                                     </div>
-                                    <button type="submit" disabled={loading} className="bg-[#ef3e36] text-white px-8 py-4 rounded-xl text-xs font-black uppercase tracking-widest shadow-sm hover:bg-red-600 transition disabled:opacity-50">
-                                        {loading ? "Processing..." : "Update Credentials"}
-                                    </button>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Indian State</label>
+                                            <select 
+                                                value={userState} 
+                                                onChange={(e) => { setUserState(e.target.value); setCity(""); }} 
+                                                className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${borderSecondary} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm appearance-none cursor-pointer`}
+                                            >
+                                                <option value="">Select State</option>
+                                                {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>City / District</label>
+                                            {CITIES_BY_STATE[userState] ? (
+                                                <select 
+                                                    value={city} 
+                                                    onChange={(e) => setCity(e.target.value)} 
+                                                    className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${borderSecondary} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm appearance-none cursor-pointer`}
+                                                >
+                                                    <option value="">Select City</option>
+                                                    {CITIES_BY_STATE[userState].map(c => <option key={c} value={c}>{c}</option>)}
+                                                    <option value="Other">Other (Manual Input)</option>
+                                                </select>
+                                            ) : (
+                                                <input 
+                                                    type="text" 
+                                                    value={city} 
+                                                    onChange={(e) => setCity(e.target.value)} 
+                                                    placeholder="Enter City Name"
+                                                    className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${borderSecondary} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`}
+                                                />
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {city === "Other" && (
+                                        <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                            <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Manual City Entry</label>
+                                            <input type="text" placeholder="Specify your city" onChange={(e) => setCity(e.target.value)} className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${borderSecondary} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} />
+                                        </div>
+                                    )}
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Landmark / Street</label>
+                                            <input type="text" value={landmark} onChange={(e) => setLandmark(e.target.value)} placeholder="e.g. Near Main Square" className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${borderSecondary} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} />
+                                        </div>
+                                        <div>
+                                            <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Pincode</label>
+                                            <input type="text" value={pincode} onChange={(e) => setPincode(e.target.value)} placeholder="6-digit code" className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${borderSecondary} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none transition-all shadow-sm`} />
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-6">
+                                        <button 
+                                            type="submit" 
+                                            disabled={loading} 
+                                            className="w-full md:w-auto bg-[#ef3e36] text-white px-12 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
+                                        >
+                                            {loading ? "Synchronizing..." : "Save Profile Changes"}
+                                        </button>
+                                    </div>
                                 </form>
                             </section>
 
-                            <div className={`border-t ${borderSecondary}`}></div>
-
-                            <section>
-                                <h3 className={`text-lg font-black ${textPrimary} uppercase tracking-tighter mb-6`}>Security Protocol</h3>
-                                <form onSubmit={handleChangePassword} className="space-y-6">
-                                    <div className="relative">
-                                        <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>Current Password</label>
-                                        <input type={showPasswords ? "text" : "password"} placeholder="••••••••" value={passwords.current} onChange={(e) => setPasswords({ ...passwords, current: e.target.value })} className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${borderSecondary} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none shadow-sm pr-12`} />
-                                        <button type="button" onClick={() => setShowPasswords(!showPasswords)} className={`absolute right-4 top-10 ${textSecondary} hover:${textPrimary} transition`}>
-                                            {showPasswords ? <EyeOff size={18} /> : <Eye size={18} />}
-                                        </button>
-                                    </div>
-                                    <div className="relative">
-                                        <label className={`block text-[11px] font-black ${textSecondary} uppercase tracking-[0.2em] mb-2`}>New Password</label>
-                                        <input type={showPasswords ? "text" : "password"} placeholder="••••••••" value={passwords.next} onChange={(e) => setPasswords({ ...passwords, next: e.target.value })} className={`w-full ${isDark ? "bg-slate-800 text-white" : "bg-[#f8fafc] text-[#0f172a]"} border ${borderSecondary} rounded-2xl p-4 text-sm font-bold focus:ring-2 focus:ring-[#ef3e36]/20 focus:border-[#ef3e36] outline-none shadow-sm pr-12`} />
-                                        <button type="button" onClick={() => setShowPasswords(!showPasswords)} className={`absolute right-4 top-10 ${textSecondary} hover:${textPrimary} transition`}>
-                                            {showPasswords ? <EyeOff size={18} /> : <Eye size={18} />}
-                                        </button>
-                                    </div>
-                                    <button type="submit" disabled={loading} className={`border-2 border-[#ef3e36] text-[#ef3e36] px-8 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#ef3e36] hover:text-white transition shadow-sm disabled:opacity-50`}>
-                                        Authorize Change
-                                    </button>
-                                </form>
-                            </section>
+                            <div className={`p-8 rounded-[2rem] border ${borderSecondary} ${isDark ? 'bg-slate-800/50' : 'bg-slate-50'} flex items-start gap-4`}>
+                                <div className="p-3 bg-blue-500/10 rounded-xl">
+                                    <span className="text-xl">🛡️</span>
+                                </div>
+                                <div>
+                                    <p className={`text-xs font-bold ${textPrimary} uppercase tracking-wider mb-1`}>Secure Cloud Sync</p>
+                                    <p className={`text-[10px] ${textSecondary} font-medium leading-relaxed`}>Your profile data is encrypted and synchronized across all Rubrik Reset ecosystem terminials. Changes reflect instantly upon saving.</p>
+                                </div>
+                            </div>
                         </div>
                     )}
 
@@ -379,38 +441,28 @@ const Dashboard = () => {
 
                     {/* MY WISHLIST */}
                     {activeTab === "wishlist" && (
-                        <div className="animate-in fade-in duration-500">
-                            <div className={`border ${borderSecondary} rounded-2xl overflow-hidden`}>
-                                <table className="w-full text-left whitespace-nowrap">
-                                    <thead>
-                                        <tr className={`${isDark ? "bg-slate-800 text-slate-400" : "bg-slate-50 text-slate-400"} text-[10px] uppercase font-black tracking-widest`}>
-                                            <th className="p-5">Product Title</th>
-                                            <th className="p-5">Price</th>
-                                            <th className="p-5 text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className={`divide-y ${isDark ? "divide-slate-700" : "divide-slate-100"}`}>
-                                        {wishlist.map((w) => (
-                                            <tr key={w._id} className={`text-sm ${isDark ? "hover:bg-slate-800" : "hover:bg-slate-50"}`}>
-                                                <td className={`p-5 font-bold ${textPrimary}`}>{w.title}</td>
-                                                <td className={`p-5 font-mono font-bold text-[#ef3e36]`}>₹{w.price}</td>
-                                                <td className="p-5 text-right space-x-4">
-                                                    <button onClick={() => { addToCart(w); navigate("/cart"); }} className={`bg-[#2A7B8E] text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition shadow-sm`}>
-                                                        Add to Cart
-                                                    </button>
-                                                    <button onClick={() => handleRemoveWishlist(w._id)} className={`text-[#ef3e36] px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:underline transition`}>
-                                                        Remove
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                        {wishlist.length === 0 && (
-                                            <tr>
-                                                <td colSpan="3" className={`p-8 text-center ${textSecondary} font-bold text-sm`}>Your wishlist is currently empty.</td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
+                        <div className="animate-in fade-in slide-in-from-bottom-6 duration-500 space-y-8">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className={`text-lg font-black ${textPrimary} uppercase tracking-tighter`}>Saved for Later</h3>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                                {wishlist.length > 0 ? wishlist.map((item) => (
+                                    <ProductCard
+                                        key={item._id}
+                                        item={item}
+                                        isWishlisted={true} // Since it's in the wishlist
+                                        onWishlistClick={() => handleRemoveWishlist(item._id)}
+                                    />
+                                )) : (
+                                    <div className="col-span-full py-16 text-center border-2 border-dashed border-slate-100 rounded-[2.5rem]">
+                                        <div className="h-16 w-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 grayscale opacity-50">
+                                            <span className="text-2xl">💝</span>
+                                        </div>
+                                        <p className={`${textSecondary} font-black text-xs uppercase tracking-[0.2em]`}>Your wishlist is empty</p>
+                                        <button onClick={() => navigate("/store")} className="mt-6 text-[#ef3e36] text-[10px] font-black uppercase tracking-widest hover:underline">Explore the Store</button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}

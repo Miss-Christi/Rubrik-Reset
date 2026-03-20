@@ -25,23 +25,28 @@ const Home = () => {
     const [selectedProduct, setSelectedProduct] = useState(null);
 
     const { user } = useContext(AuthContext);
-    const [challenges, setChallenges] = useState(FORMATION_CHALLENGES);
+    const [challenges, setChallenges] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [reflections, setReflections] = useState([]);
     const [wishlistProducts, setWishlistProducts] = useState(new Set());
     const [wishlistChallenges, setWishlistChallenges] = useState(new Set());
 
     useEffect(() => {
-        getChallenges()
-            .then(res => {
-                if (res.data && res.data.length > 0) {
-                    setChallenges(res.data);
-                } else {
-                    setChallenges(FORMATION_CHALLENGES);
-                }
-            })
-            .catch((err) => {
-                console.error("Failed to fetch challenges from API, falling back to static data:", err);
-                setChallenges(FORMATION_CHALLENGES);
-            });
+        const fetchData = async () => {
+            try {
+                const [cRes, pRes, rRes] = await Promise.all([
+                    axios.get(`${API_BASE_URL}/products?category=Challenge`),
+                    axios.get(`${API_BASE_URL}/products`),
+                    axios.get(`${API_BASE_URL}/reflections`)
+                ]);
+                setChallenges(cRes.data);
+                setProducts(pRes.data.filter(p => p.category !== 'Challenge').slice(0, 6));
+                setReflections(rRes.data.slice(0, 5));
+            } catch (err) {
+                console.error("Home fetch failed:", err);
+            }
+        };
+        fetchData();
         if (user) {
             getWishlist().then(res => {
                 setWishlistProducts(new Set(res.data.products.map(p => p._id || p)));
@@ -168,11 +173,11 @@ const Home = () => {
                 <section className="py-24 container mx-auto px-6" id="explore">
                     <SectionHeader title="Store Highlights" link="/store" />
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 md:gap-8">
-                        {NEW_ARRIVALS.map((item) => (
-                            <div key={item.id} onClick={() => setSelectedProduct(item)} className="cursor-pointer">
+                        {products.map((item) => (
+                            <div key={item._id || item.id} onClick={() => setSelectedProduct(item)} className="cursor-pointer">
                                 <ProductCard
                                     item={item}
-                                    isWishlisted={wishlistProducts.has(item.id)}
+                                    isWishlisted={wishlistProducts.has(item._id || item.id)}
                                     onWishlistClick={handleWishlistProduct}
                                 />
                             </div>
@@ -268,8 +273,8 @@ const Home = () => {
                     <div className="container mx-auto px-6">
                         <SectionHeader title="Reflections" link="/blog" />
                         <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
-                            {BLOG_POSTS.map((post) => (
-                                <div key={post.id} onClick={() => navigate(`/blog/${post.id}`)} className="h-full">
+                            {(reflections.length > 0 ? reflections : BLOG_POSTS).map((post) => (
+                                <div key={post._id || post.id} onClick={() => navigate(`/blog/${post._id || post.id}`)} className="h-full">
                                     <BlogCard post={post} />
                                 </div>
                             ))}
@@ -449,20 +454,20 @@ const Home = () => {
                             </h4>
                             <ul className="space-y-4 text-sm text-white/90 font-medium">
                                 <li>
-                                    <a
-                                        href="#"
-                                        className="hover:translate-x-1 inline-block transition-transform"
+                                    <button
+                                        onClick={() => navigate("/legal")}
+                                        className="hover:translate-x-1 inline-block transition-transform text-left"
                                     >
                                         Privacy Policy
-                                    </a>
+                                    </button>
                                 </li>
                                 <li>
-                                    <a
-                                        href="#"
-                                        className="hover:translate-x-1 inline-block transition-transform"
+                                    <button
+                                        onClick={() => navigate("/legal")}
+                                        className="hover:translate-x-1 inline-block transition-transform text-left"
                                     >
                                         Terms of Service
-                                    </a>
+                                    </button>
                                 </li>
                             </ul>
                             <p className="mt-10 text-xs text-white/50">

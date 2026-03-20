@@ -248,6 +248,46 @@ const resetPassword = asyncHandler(async (req, res) => {
     });
 });
 
+// @desc    Update user role (Admin only)
+// @route   PUT /api/admin/users/:id/role
+// @access  Private/Admin
+const updateUserRole = asyncHandler(async (req, res) => {
+    const { role } = req.body;
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+        user.role = role;
+        await user.save();
+        res.json({ message: `User role updated to ${role}` });
+    } else {
+        res.status(404);
+        throw new Error("User not found");
+    }
+});
+
+// @desc    Delete user (Admin only)
+// @route   DELETE /api/admin/users/:id
+// @access  Private/Admin
+const deleteUser = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+        // Option: Check if it's the last admin
+        if (user.role === 'admin') {
+           const adminCount = await User.countDocuments({ role: 'admin' });
+           if (adminCount <= 1) {
+                res.status(400);
+                throw new Error("Cannot delete the last admin user");
+           }
+        }
+        await User.deleteOne({ _id: user._id });
+        res.json({ message: "User deleted successfully" });
+    } else {
+        res.status(404);
+        throw new Error("User not found");
+    }
+});
+
 export {
     registerUser,
     loginUser,
@@ -256,5 +296,7 @@ export {
     updateUserProfile,
     updateUserPassword,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    updateUserRole,
+    deleteUser
 };

@@ -35,20 +35,34 @@ const userSchema = new mongoose.Schema(
             type: String,
             default: "",
         },
-        wishlist: [{
+        state: {
+            type: String,
+            default: "",
+        },
+        city: {
+            type: String,
+            default: "",
+        },
+        landmark: {
+            type: String,
+            default: "",
+        },
+        pincode: {
+            type: String,
+            default: "",
+        },
+        pincode: {
+            type: String,
+            default: "",
+        },
+        wishlistedProducts: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Product'
         }],
-        wishlistedProducts: [
-            {
-                type: String,
-            }
-        ],
-        wishlistedChallenges: [
-            {
-                type: String,
-            }
-        ],
+        wishlistedChallenges: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Challenge'
+        }],
     },
     {
         timestamps: true,

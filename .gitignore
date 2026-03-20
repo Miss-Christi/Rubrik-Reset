@@ -26,3 +26,9 @@ backend/.env
 *.njsproj
 *.sln
 *.sw?
+
+node_modules/
+.env
+*.txt
+*.temp.jsx
+tmp_*.jsx

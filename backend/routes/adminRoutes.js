@@ -1,7 +1,9 @@
 import express from "express";
 const router = express.Router();
 import Product from "../models/Product.js";
+import Challenge from "../models/Challenge.js";
 import Purchase from "../models/Purchase.js";
+import SiteContent from "../models/SiteContent.js";
 import User from "../models/User.js";
 import { protect, admin } from "../middleware/authMiddleware.js";
 
@@ -13,18 +15,8 @@ router.get("/stats", protect, admin, async (req, res) => {
         const totalOrders = await Purchase.countDocuments();
 
         // Calculate Processed Orders from Challenges
-        // We aggregate Purchases, lookup the Product, and count where category is 'Challenge'
         const challengeData = await Purchase.aggregate([
-            {
-                $lookup: {
-                    from: "products",
-                    localField: "productId",
-                    foreignField: "_id",
-                    as: "productDetails"
-                }
-            },
-            { $unwind: "$productDetails" },
-            { $match: { "productDetails.category": "Challenge" } },
+            { $match: { itemType: 'Challenge' } },
             { $count: "challengeOrders" }
         ]);
 
@@ -51,31 +43,43 @@ router.get("/products", protect, admin, async (req, res) => {
     }
 });
 
-// @desc    Get all users
-// @route   GET /api/admin/users
-router.get("/users", protect, admin, async (req, res) => {
+// @desc    Get all challenge definitions (for management)
+// @route   GET /api/admin/challenges/list
+router.get("/challenges/list", protect, admin, async (req, res) => {
     try {
-        const users = await User.find({}).select("-password");
-        res.json(users);
+        const challenges = await Challenge.find({});
+        res.json(challenges);
     } catch (error) {
-        res.status(500).json({ message: "Error fetching users" });
+        res.status(500).json({ message: "Error fetching challenges" });
     }
 });
+
+// @desc    Get all users
 
 // @desc    Get challenge participation history
 // @route   GET /api/admin/challenges
 router.get("/challenges", protect, admin, async (req, res) => {
     try {
-        // Find purchases that correspond to challenges
-        const challengePurchases = await Purchase.find({}).populate("productId userId");
-        const challenges = challengePurchases
-            .filter(p => p.productId && p.productId.category === "Challenge")
-            .map(p => ({
-                userName: p.userId ? p.userId.name : "Unknown User",
-                challengeTitle: p.productId.title,
-                createdAt: p.purchaseDate,
-                status: "active"
-            }));
+        const challengePurchases = await Purchase.find({ itemType: 'Challenge' }).populate("itemId");
+        
+        const activeChallengesMap = {};
+
+        challengePurchases.forEach(p => {
+            if (p.itemId) {
+                const id = p.itemId._id.toString();
+                if (!activeChallengesMap[id]) {
+                    activeChallengesMap[id] = {
+                        _id: id,
+                        challengeTitle: p.itemId.title,
+                        activeUsersCount: 0,
+                        status: "active"
+                    };
+                }
+                activeChallengesMap[id].activeUsersCount += 1;
+            }
+        });
+
+        const challenges = Object.values(activeChallengesMap);
         res.json(challenges);
     } catch (error) {
         res.status(500).json({ message: "Error fetching challenge stats" });
@@ -103,6 +107,41 @@ router.post("/products", protect, admin, async (req, res) => {
     }
 });
 
+// @desc    Add a new challenge
+// @route   POST /api/admin/challenges
+router.post("/challenges", protect, admin, async (req, res) => {
+    try {
+        const { title, category, price, image, days, fileUrl } = req.body;
+        const challenge = await Challenge.create({
+            title,
+            category: category || "Challenge",
+            price: Number(price) || 0,
+            image: image || "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1000",
+            days: Number(days) || 30,
+            fileUrl: fileUrl || ""
+        });
+        res.status(201).json(challenge);
+    } catch (error) {
+        res.status(500).json({ message: "Error adding challenge" });
+    }
+});
+
+// @desc    Delete a challenge
+// @route   DELETE /api/admin/challenges/:id
+router.delete("/challenges/:id", protect, admin, async (req, res) => {
+    try {
+        const challenge = await Challenge.findById(req.params.id);
+        if (challenge) {
+            await challenge.deleteOne();
+            res.json({ message: "Challenge removed" });
+        } else {
+            res.status(404).json({ message: "Challenge not found" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting challenge" });
+    }
+});
+
 // @desc    Delete a product
 // @route   DELETE /api/admin/products/:id
 router.delete("/products/:id", protect, admin, async (req, res) => {
@@ -117,6 +156,30 @@ router.delete("/products/:id", protect, admin, async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Error deleting product" });
     }
+});
+
+// @desc    Get editable site content
+// @route   GET /api/admin/site-content/:key
+router.get("/site-content/:key", async (req, res) => {
+    try {
+        const content = await SiteContent.findOne({ key: req.params.key });
+        res.json({ value: content ? content.value : null });
+    } catch (err) {
+        res.status(500).json({ message: "Error fetching content" });
+    }
+});
+
+// @desc    Update editable site content
+// @route   PUT /api/admin/site-content/:key
+router.put("/site-content/:key", protect, admin, async (req, res) => {
+    const { value } = req.body;
+    if (!value) return res.status(400).json({ message: "Value is required" });
+    const content = await SiteContent.findOneAndUpdate(
+        { key: req.params.key },
+        { value },
+        { upsert: true, new: true }
+    );
+    res.json(content);
 });
 
 export default router;

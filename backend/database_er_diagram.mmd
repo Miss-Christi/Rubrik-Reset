@@ -73,7 +73,8 @@ erDiagram
     PURCHASE {
         ObjectId _id PK
         ObjectId userId FK
-        ObjectId productId FK
+        ObjectId itemId FK
+        String itemType "Enum: Product, Challenge"
         Number downloadCount
         Number maxDownloadLimit
         Date expiryDate
@@ -86,6 +87,13 @@ erDiagram
         String email
         String message
         Boolean newsletter
+        Date createdAt
+    }
+
+    ADMIN {
+        ObjectId _id PK
+        String name
+        String email
     }
 
     %% Relationships
@@ -93,7 +101,12 @@ erDiagram
     CHALLENGE ||--o{ USER_CHALLENGE : "has participants"
     CHALLENGE ||--|{ CHALLENGE_DAY : "contains"
     USER ||--o{ USER_CHALLENGE_DAY : "completes"
-    CHALLENGE_DAY ||--o{ USER_CHALLENGE_DAY : "completed by"
+    CHALLENGE_DAY ||--o{ USER_CHALLENGE_DAY : "tracked by"
     USER ||--o{ PURCHASE : "makes"
-    PRODUCT ||--o{ PURCHASE : "is bought in"
+    PRODUCT ||--o{ PURCHASE : "purchasable as"
+    CHALLENGE ||--o{ PURCHASE : "purchasable as"
     USER }|--o{ PRODUCT : "has in wishlist"
+    USER |o--o{ MESSAGE : "sends"
+    ADMIN ||--o{ CHALLENGE : "manages"
+    ADMIN ||--o{ PRODUCT : "manages"
+    USER ||--o{ ADMIN : "can be"

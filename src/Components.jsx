@@ -21,8 +21,8 @@ export const ProductCard = ({ item, showPrice = true, isWishlisted = false, onWi
       {/* Image Container */}
       <div className="bg-gray-100 aspect-[4/5] rounded-2xl flex items-center justify-center relative overflow-hidden shadow-sm group-hover:shadow-xl group-hover:shadow-rubrik-navy/10 transition-all duration-500">
         <img 
-          src={item.image} 
-          alt={item.title} 
+          src={item.image || item.fileUrl || "https://placehold.co/400x500/eaeaea/a3a3a3?text=No+Image"} 
+          alt={item.title || item.name} 
           className="w-full h-full object-cover group-hover:scale-110 transition duration-700 ease-out" 
         />
         
@@ -41,7 +41,7 @@ export const ProductCard = ({ item, showPrice = true, isWishlisted = false, onWi
           <div>
             <p className="text-[10px] font-bold text-rubrik-red uppercase tracking-wider mb-1">{item.category}</p>
             <h3 className="font-bold text-rubrik-navy text-lg leading-tight group-hover:text-rubrik-red transition-colors duration-300">
-              {item.title}
+              {item.title || item.name}
             </h3>
           </div>
         </div>
