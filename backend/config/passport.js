@@ -2,13 +2,18 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import User from '../models/User.js'; // Ensure path and .js extension are correct
 
 export default function (passport) {
+
+    const callbackURL = process.env.NODE_ENV === "production"
+        ? process.env.PROD_CALLBACK_URL
+        : process.env.DEV_CALLBACK_URL;
+
     passport.use(
         new GoogleStrategy(
             {
                 clientID: process.env.GOOGLE_CLIENT_ID,
                 clientSecret: process.env.GOOGLE_CLIENT_SECRET,
                 // The URL Google redirects to after login
-                callbackURL: process.env.CALLBACK_URL || "http://localhost:5000/auth/google/callback",
+                callbackURL: callbackURL,
             },
             async (accessToken, refreshToken, profile, done) => {
                 const email = profile.emails[0].value;
